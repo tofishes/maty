@@ -6,5 +6,8 @@
   "repository": "https://github.com/tofishes/maty.git",
   "author": "tofishes",
   "license": "Apache License 2.0",
-  "private": false
+  "private": false,
+  "dependencies": {
+    "koa": "^2.5.3"
+  }
 }

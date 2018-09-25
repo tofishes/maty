@@ -83,14 +83,6 @@ class Stage {
   mount(app, path) {
     this.merge();
 
-    this.filters.map(filter => {
-      app.use(this.convert(filter, path));
-    })
-  }
-
-  listen(...args) {
-    const app = new Koa();
-
     app.use(bodyParser({
       jsonLimit: defaultLimit,
       formLimit: defaultLimit,
@@ -104,13 +96,21 @@ class Stage {
     }));
 
     // 扩展context
-    Object.defineProperty(app.context, 'isEnd', {
+    Reflect.defineProperty(app.context, 'isEnd', {
       get() {
         return this.body !== undefined;
       }
     });
-
     app.context.stage = this;
+
+    this.filters.map(filter => {
+      app.use(this.convert(filter, path));
+    });
+  }
+
+  listen(...args) {
+    const app = new Koa();
+
     this.mount(app);
 
     app.listen.apply(app, args);

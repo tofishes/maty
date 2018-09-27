@@ -114,7 +114,7 @@ async function handler(ctx, next) {
 
   req.router = handleConfig(req.router, ctx);
 
-  return next();
+  next();
 }
 
 module.exports = handler;

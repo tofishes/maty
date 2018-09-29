@@ -2,26 +2,27 @@ const glob = require('glob');
 const nunjucks = require('nunjucks');
 
 const env = require('../utils/env');
-const memoryCache = require('../utils/memory-cache');
+const cache = require("lru-cache");
 const parseMultiName = require('../utils/parse-multi-name');
 const parseRouter = require('./parse-router');
 const Stage = require('./stage');
+
+// request stages
+const pageInfo = require('../stages/page-info');
+const initHttpRequest = require('../stages/init-http-request');
+const match = require('../stages/match');
+// response stages
+const handler = require('../stages/handler');
+const runTask = require('../stages/run-task');
+const forward = require('../stages/forward');
+const getView = require('../stages/get-view-path');
+const render = require('../stages/render');
 
 const pwd = process.cwd();
 const defaultRouterDir = `${pwd}/routers`;
 const defaultInterceptorDir = `${pwd}/interceptors`;
 const defaultViewDir = `${pwd}/views`;
 const defaultUploadDir = `${pwd}/uploads`;
-
-const pageInfo = require('../stages/page-info');
-const initHttpRequest = require('../stages/init-http-request');
-const match = require('../stages/match');
-const handleInterceptor = require('../stages/handle-interceptor');
-const handleRouter = require('../stages/handle-router');
-const requestProxy = require('../stages/request-proxy');
-const runTask = require('../stages/run-task');
-const getViewPath = require('../stages/get-view-path');
-const render = require('../stages/render');
 
 function loadRoutes(dir) {
   const map = {};
@@ -53,7 +54,7 @@ module.exports = (args = {}) => {
     interceptorDir = defaultInterceptorDir, // 拦截器目录
     viewDir = defaultViewDir,               // 视图模板目录
     viewExclude = ['**/include/**'],        // 排除自动渲染模板的目录，采用glob匹配规则
-    apiDataCache = memoryCache,             // 接口数据缓存方法，默认存储于内存中
+    apiDataCache = cache(),                 // 接口数据缓存方法，默认lru-cache实现
     apiDataName = simpleApiDataName,        // 接口数据名方法，默认为获取api地址最后一个/后面的单词名
     handleAPI = url => url,                 // router.api地址预处理方法，默认返回自身
     ajaxCache = true                        // 是否允许缓存ajax响应结果，默认允许缓存
@@ -94,6 +95,7 @@ module.exports = (args = {}) => {
   stage.set('nunjucks', nunjucks);
   stage.set('nunjucksEnv', nunjucksEnv);
   stage.engine('njk', nunjucksEnv.render.bind(nunjucksEnv));
+  stage.set('view engine', 'njk');
 
   return stage;
 };

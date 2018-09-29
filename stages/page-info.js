@@ -4,8 +4,7 @@ const urlInfo = require('../utils/url-info');
 
 /**
  * 页面变量初始化等
- * @param  {[type]}   req  [description]
- * @param  {[type]}   res  [description]
+ * @param  {[type]}   ctx  [description]
  * @param  {Function} next [description]
  * @return {[type]}        [description]
  */
@@ -26,7 +25,8 @@ module.exports = function pageInfo(ctx, next) {
   });
 
   ctx.state.request = req;
-  ctx.state.apiData = valueChain.set({});
+  ctx.state.response = ctx.response;
+  ctx.apiData = valueChain.set({});
 
   next();
 }

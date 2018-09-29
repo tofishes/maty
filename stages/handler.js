@@ -8,11 +8,12 @@ function isFunc(obj) {
 function isString(obj) {
   return typeOf(obj).is('string');
 }
-function handleConfig(originConfig, req, res) {
+function handleConfig(originConfig, ctx) {
+  const req = ctx.request;
   let config = originConfig;
 
   if (isFunc(config)) {
-    config = config(req, res);
+    config = config(ctx);
   }
 
   if (!config) {
@@ -24,22 +25,22 @@ function handleConfig(originConfig, req, res) {
 
   // api可以是字符串，字符串数组，对象混合字符串数组，函数(返回前面3中类型数据)
   if (isFunc(api)) {
-    api = api.call(config, req, res);
+    api = api.call(config, ctx);
   }
 
   // 无api配置，直接执行下一个stage
   if (!api) {
     if (isInterceptor && config.handle) {
-      const data = config.handle(res.apiData, req, res);
+      const data = config.handle(ctx.apiData, ctx);
 
       if (data) {
         valueChain.set(data);
       }
 
       if (config.name) {
-        res.apiData[config.name] = data;
+        ctx.apiData[config.name] = data;
       } else {
-        res.apiData = data || res.apiData;
+        ctx.apiData = data || ctx.apiData;
       }
     }
     return config;
@@ -65,7 +66,7 @@ function handleConfig(originConfig, req, res) {
     let task = req.apisTask[taskName];
 
     if (!task) {
-      task = new Task(isSeries).context({ req, res });
+      task = new Task(isSeries).context(ctx);
       req.apisTask[taskName] = task;
     }
 

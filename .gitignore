@@ -42,3 +42,5 @@ desktop.ini
 *.dev.js
 
 .vscode
+
+test.js

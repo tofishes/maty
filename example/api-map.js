@@ -1,4 +1,3 @@
-
 module.exports = {
-  '/api/comment/list': 'http://localhost:8080'
+  '/api/comments': 'http://localhost:8080'
 };

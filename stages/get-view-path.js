@@ -12,8 +12,7 @@ async function getViewPath(ctx, next) {
     view = view.call(router, ctx);
 
     if (!view) {
-      await next();
-      return;
+      return next();
     }
   }
 
@@ -49,7 +48,7 @@ async function getViewPath(ctx, next) {
     });
   }
 
-  await next();
+  return next();
 }
 
 module.exports = getViewPath;

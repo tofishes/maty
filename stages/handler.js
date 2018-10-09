@@ -142,7 +142,7 @@ async function handler(ctx, next) {
 
   await handleData(req.router, ctx);
 
-  await next();
+  return next();
 }
 
 module.exports = handler;

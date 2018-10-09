@@ -29,5 +29,5 @@ module.exports = async function pageInfo(ctx, next) {
   ctx.apiData = valueChain.set({});
   ctx.apiInfo = {};
 
-  await next();
+  return next();
 }

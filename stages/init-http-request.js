@@ -44,5 +44,5 @@ module.exports = async function initHttpRequest(ctx, next) {
 
   response.disableCache(disablePageCache || disableAjaxCache);
 
-  await next();
+  return next();
 };

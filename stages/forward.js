@@ -52,7 +52,7 @@ module.exports = async function forward(ctx, next) {
 
   // 无跳转url
   if (!url) {
-    return await next();
+    return next();
   }
 
   const request = req.httpRequest();

@@ -66,8 +66,7 @@ async function match(ctx, next) {
 
   // 未匹配到路由
   if (!router) {
-    await next();
-    return;
+    return next();
   }
 
   const method = request.method.toLowerCase();
@@ -84,7 +83,7 @@ async function match(ctx, next) {
   Object.assign(request.query, param);
   Object.assign(request.body, param);
 
-  await next();
+  return next();
 }
 
 module.exports = match;

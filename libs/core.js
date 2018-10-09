@@ -7,17 +7,6 @@ const parseMultiName = require('../utils/parse-multi-name');
 const parseRouter = require('./parse-router');
 const Stage = require('./stage');
 
-// request stages
-const pageInfo = require('../stages/page-info');
-const initHttpRequest = require('../stages/init-http-request');
-const match = require('../stages/match');
-// response stages
-const handler = require('../stages/handler');
-const runTask = require('../stages/run-task');
-const forward = require('../stages/forward');
-const getView = require('../stages/get-view-path');
-const render = require('../stages/render');
-
 const pwd = process.cwd();
 const defaultRouterDir = `${pwd}/routers`;
 const defaultInterceptorDir = `${pwd}/interceptors`;

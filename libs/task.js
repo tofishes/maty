@@ -52,19 +52,20 @@ class Task {
 
   // api类型任务
   addApiTask(apiItem, config) {
-    const { req, res } = this.props.context;
-    const request = req.httpRequest();
+    const ctx = this.props.context;
+    const { request, stage } = ctx;
+    const httpRequest = request.httpRequest();
 
     const excute = func => {
       if (isFunc(func)) {
-        return func.call(config, req, res);
+        return func.call(config, ctx);
       }
 
       return func;
     };
 
-    const query = config.query || req.query;
-    const body = config.body || req.body;
+    const query = config.query || request.query;
+    const body = config.body || request.body;
     const name = config.name;
     let cache = config.cache;
 
@@ -97,21 +98,21 @@ class Task {
       apiConfig.cache = cache = excute(apiConfig.cache);
       // 数据名
       if (!apiConfig.name) {
-        apiConfig.name = req.stage.get('apiDataName').call(config, apiConfig.api);
+        apiConfig.name = stage.get('apiDataName').call(config, apiConfig.api);
       }
 
       const dataName = apiConfig.name;
 
-      const urlMethod = parseURLMethod(apiConfig.api, req.method);
+      const urlMethod = parseURLMethod(apiConfig.api, request.method);
       let url = urlMethod.url;
       const cacheKey = url + querystring.stringify(apiConfig.query);
 
-      const handleAPI = req.stage.get('handleAPI');
-      url = handleAPI(url, req);
+      const handleAPI = stage.get('handleAPI');
+      url = handleAPI(url, request);
 
       apiConfig.method = urlMethod.method;
 
-      res.apiInfo[dataName] = apiConfig;
+      ctx.apiInfo[dataName] = apiConfig;
 
       let expires = cache;
       if (cache === true) {
@@ -119,20 +120,20 @@ class Task {
       }
 
       if (cache) {
-        const apiDataCache = req.stage.get('apiDataCache');
+        const apiDataCache = stage.get('apiDataCache');
         let result = apiDataCache.get(cacheKey);
 
         if (result) {
           const consumeTime = timer.end();
           const resBody = result;
           const headers = { 'x-data-from': 'cache' };
-          Object.assign(res.apiInfo[dataName], { consumeTime, headers, resBody });
+          Object.assign(ctx.apiInfo[dataName], { consumeTime, headers, resBody });
 
           if (apiConfig.handle) {
             result = await apiConfig.handle.call(config, result, req, res);
           }
 
-          res.apiData[dataName] = valueChain.set(result);
+          ctx.apiData[dataName] = valueChain.set(result);
 
           return callback(null, result);
         }
@@ -141,7 +142,7 @@ class Task {
       const complete = (error, response, resBody) => {
         const consumeTime = timer.end();
         const headers = response && response.headers;
-        Object.assign(res.apiInfo[dataName], { consumeTime, headers, resBody });
+        Object.assign(ctx.apiInfo[dataName], { consumeTime, headers, resBody });
 
         let result = resBody;
         let willCache = !!cache;
@@ -167,7 +168,7 @@ class Task {
         }
         // 必须缓存原始数据，否则不同路由的数据共享在handle时会出问题
         if (willCache) {
-          const apiDataCache = req.stage.get('apiDataCache');
+          const apiDataCache = stage.get('apiDataCache');
           apiDataCache.set(cacheKey, result, expires);
         }
 
@@ -175,12 +176,12 @@ class Task {
           result = apiConfig.handle.call(config, valueChain.set(result), req, res);
         }
 
-        res.apiData[dataName] = valueChain.set(result);
+        ctx.apiData[dataName] = valueChain.set(result);
 
         return callback(null, result);
       };
 
-      return request[apiConfig.method]({
+      return httpRequest[apiConfig.method]({
         body: apiConfig.body,
         qs: apiConfig.query,
         url

@@ -31,7 +31,7 @@ function getRequest() {
   return request;
 }
 
-module.exports = function initHttpRequest(ctx, next) {
+module.exports = async function initHttpRequest(ctx, next) {
   const { request, response } = ctx;
 
   request.httpRequest = getRequest;
@@ -44,5 +44,5 @@ module.exports = function initHttpRequest(ctx, next) {
 
   response.disableCache(disablePageCache || disableAjaxCache);
 
-  next();
+  await next();
 };

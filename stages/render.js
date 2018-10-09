@@ -6,6 +6,10 @@ function render(ctx, next) {
   const filePath = response.viewFile;
 
   if (!filePath) {
+    if (Object.keys(ctx.apiData).length) {
+      return ctx.body = ctx.apiData;
+    }
+
     return next();
   }
 
@@ -33,6 +37,7 @@ function render(ctx, next) {
         reject(err);
       } else {
         ctx.body = html;
+        resolve(html);
       }
     });
   });

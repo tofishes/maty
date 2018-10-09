@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const typeOf = require('../utils/typeof');
 
-function getViewPath(ctx, next) {
+async function getViewPath(ctx, next) {
   const { request, response, stage} = ctx;
   const router = request.router || {};
 
@@ -12,7 +12,8 @@ function getViewPath(ctx, next) {
     view = view.call(router, ctx);
 
     if (!view) {
-      return next();
+      await next();
+      return;
     }
   }
 
@@ -48,7 +49,7 @@ function getViewPath(ctx, next) {
     });
   }
 
-  next();
+  await next();
 }
 
 module.exports = getViewPath;

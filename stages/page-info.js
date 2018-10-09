@@ -8,7 +8,7 @@ const urlInfo = require('../utils/url-info');
  * @param  {Function} next [description]
  * @return {[type]}        [description]
  */
-module.exports = function pageInfo(ctx, next) {
+module.exports = async function pageInfo(ctx, next) {
   const req = ctx.request;
   const { moduleName, pathes, pathname } = urlInfo(req.path);
   const ua = parser(req.get('User-Agent'));
@@ -27,6 +27,7 @@ module.exports = function pageInfo(ctx, next) {
   ctx.state.request = req;
   ctx.state.response = ctx.response;
   ctx.apiData = valueChain.set({});
+  ctx.apiInfo = {};
 
-  next();
+  await next();
 }

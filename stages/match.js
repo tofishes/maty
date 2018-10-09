@@ -54,7 +54,9 @@ function matchInterceptor(req, interceptors) {
   });
 }
 
-function match(ctx, next) {
+const defaultMethods = ['get'];
+
+async function match(ctx, next) {
   const { request, stage } = ctx;
 
   const { router, param = {} } = matchRouter(request.path, stage.get('routers'));
@@ -64,11 +66,12 @@ function match(ctx, next) {
 
   // 未匹配到路由
   if (!router) {
-    return next();
+    await next();
+    return;
   }
 
   const method = request.method.toLowerCase();
-  const supportRouter = router.methods.includes(method);
+  const supportRouter = (router.methods || defaultMethods).includes(method);
 
   if (!supportRouter) {
     ctx.status = 405;
@@ -81,7 +84,7 @@ function match(ctx, next) {
   Object.assign(request.query, param);
   Object.assign(request.body, param);
 
-  return next();
+  await next();
 }
 
 module.exports = match;

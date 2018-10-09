@@ -75,6 +75,8 @@ function handleConfig(originConfig, ctx) {
     return item;
   });
 
+  console.log(__filename, ': ', config)
+
   return config;
 }
 
@@ -89,12 +91,24 @@ async function handleInterceptor(ctx) {
   const seriesTask = req.apisTask.series;
 
   if (seriesTask) {
-    try {
-      await seriesTask.run();
-      req.apisTask.series = null;
-    } catch (e) {
-      console.log(e);
-    }
+    await seriesTask.run();
+    req.apisTask.series = null;
+  }
+}
+
+async function handleData(router, ctx) {
+  if (!router || !router.handle) {
+    return;
+  }
+
+  const data = await router.handle(ctx.apiData, ctx);
+
+  valueChain.set(data);
+
+  if (router.name) {
+    ctx.apiData[router.name] = data;
+  } else {
+    ctx.apiData = data;
   }
 }
 
@@ -115,7 +129,20 @@ async function handler(ctx, next) {
 
   req.router = handleConfig(req.router, ctx);
 
-  next();
+  const seriesTask = req.apisTask.series;
+  const parallelTask = req.apisTask.parallel;
+
+  if (seriesTask) {
+    await seriesTask.run();
+  }
+
+  if (parallelTask) {
+    await parallelTask.run();
+  }
+
+  await handleData(req.router, ctx);
+
+  await next();
 }
 
 module.exports = handler;

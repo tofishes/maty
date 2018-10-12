@@ -19,8 +19,13 @@ stage.app.use(async (ctx, next) => {
     return;
   }
 
+  const timer = log.time();
+
   await next();
+
+  log.warn(`this request ${ctx.path} cost time ${timer.end()}`)
 });
+
 
 require('marko/node-require').install();  // eslint-disable-line
 stage.engine('marko', (filePath, data, callback) => {
@@ -29,19 +34,9 @@ stage.engine('marko', (filePath, data, callback) => {
   template.renderToString(data, callback);
 });
 
-stage.on('request', async (ctx, next) => {
-  // console.log(ctx.request.router, '...');
+stage.filter('response', async (ctx, next) => {
   await next();
 
-  const apiInfo = ctx.apiInfo;
-
-  Object.keys(apiInfo).map(name => {
-    const info = apiInfo[name];
-    log.info(info.method, info.api, info.consumeTime, 'ms');
-  });
-});
-
-stage.on('response', async (ctx, next) => {
   const apiInfo = ctx.apiInfo;
 
   Object.keys(apiInfo).map(name => {

@@ -1,5 +1,4 @@
 // class Stage
-const qs = require('qs');
 const Koa = require('koa');
 const compose = require('koa-compose');
 const bodyParser = require('koa-body');
@@ -78,7 +77,14 @@ class Stage {
     });
   }
 
-  mount(app, mountPath) {
+  mount(path, koaApp) {
+    let [app, mountPath] = [koaApp, path];
+
+    if (path instanceof Koa) {
+      app = path;
+      mountPath = null;
+    }
+
     app.use(bodyParser({
       jsonLimit: defaultLimit,
       formLimit: defaultLimit,

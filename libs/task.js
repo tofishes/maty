@@ -5,13 +5,6 @@ const valueChain = require('value-chain');
 const parseURLMethod = require('../utils/parse-url-method');
 const typeOf = require('../utils/typeof');
 
-function isFunc(obj) {
-  return typeOf(obj).is('function');
-}
-function isString(obj) {
-  return typeOf(obj).is('string');
-}
-
 class Task {
   constructor(isSeries) {
     this.tasks = [];
@@ -53,37 +46,37 @@ class Task {
   // api类型任务
   addApiTask(apiItem, config) {
     const ctx = this.props.context;
-    const { request, stage } = ctx;
-    const httpRequest = request.httpRequest();
+    const { stage } = ctx;
+    const httpRequest = ctx.httpRequest();
 
     const excute = func => {
-      if (isFunc(func)) {
+      if (typeOf(func).isFunc) {
         return func.call(config, ctx);
       }
 
       return func;
     };
 
-    const query = config.query || request.query;
-    const body = config.body || request.body;
+    const query = config.query || ctx.query;
+    const body = config.body || ctx.reqBody;
     const name = config.name;
     let cache = config.cache;
 
     async function action(callback) {
       const timer = log.time();
 
-      let apiConfig = apiItem;
+      let apiConfig;
 
-      if (isString(apiItem)) {
+      if (typeOf(apiItem).isString) {
         apiConfig = { 'api': apiItem };
-      } else if (isFunc(apiItem)) {
+      } else {
         apiConfig = excute(apiItem);
 
         if (!apiConfig) {
           return callback();
         }
 
-        if (isString(apiConfig)) {
+        if (typeOf(apiConfig).isString) {
           apiConfig = { 'api': apiConfig };
         }
       }
@@ -103,12 +96,12 @@ class Task {
 
       const dataName = apiConfig.name;
 
-      const urlMethod = parseURLMethod(apiConfig.api, request.method);
+      const urlMethod = parseURLMethod(apiConfig.api, ctx.method);
       let url = urlMethod.url;
       const cacheKey = url + querystring.stringify(apiConfig.query);
 
       const handleAPI = stage.get('handleAPI');
-      url = handleAPI(url, request);
+      url = handleAPI(url, ctx);
 
       apiConfig.method = urlMethod.method;
 

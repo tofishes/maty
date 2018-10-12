@@ -1,11 +1,12 @@
 // class Stage
 const qs = require('qs');
-const minimatch = require('minimatch');
 const Koa = require('koa');
+const compose = require('koa-compose');
 const bodyParser = require('koa-body');
+const minimatch = require('minimatch');
 
 // request stages
-const pageInfo = require('../stages/page-info');
+const ready = require('../stages/ready');
 const initHttpRequest = require('../stages/init-http-request');
 const match = require('../stages/match');
 // response stages
@@ -21,35 +22,32 @@ const defaultLimit = 1000 * 1024 * 1024; // 1000M
 
 class Stage {
   constructor() {
-    this.filterMap = {
-      request: [pageInfo, initHttpRequest, match],
+    this.defautStages = {
+      request: [ready, initHttpRequest, match],
       response: [handler, forward, getView, render]
     };
-    this.stages = Object.keys(this.filterMap);
+    this.stages = Object.keys(this.defautStages);
+    this.filterMap = {};
     this.filters = [];
     this.props = {};
     this.engines = {};
 
+    this.stages.map(stageName => {
+      this.filterMap[stageName] = [];
+    });
+
     this.app = new Koa();
   }
 
-  merge() {
-    // 合并所有的filters
-    this.stages.map(name => {
-      this.filters = this.filters.concat(this.filterMap[name]);
-    });
-  }
   // 添加filter
-  on(stageName, action) {
+  filter(stageName, action) {
     const filters = this.filterMap[stageName]; // this.filterMap[stagesName];
 
     if (!filters) {
-      throw new Error(`Stage ${name} is not supported!`);
+      throw new Error(`filter to ${stageName} must be one of ${this.stages}!`);
     }
 
-    const actions = Array.isArray(action) ? action : [action];
-
-    filters.push.apply(filters, actions);
+    filters.push(action);
 
     return this;
   }
@@ -68,33 +66,19 @@ class Stage {
     return this;
   }
 
-  convert(stage, mountPath) {
-    return async (ctx, next) => {
-      // todo remove
-      // if (stage.name) {
-      //   console.log(stage.name, '----')
-      // } else {
-      //   console.log(stage.toString(), '---')
-      // }
-      if (!mountPath) {
-        return await stage(ctx, next);
-      }
+  convert(actions) {
+    return actions.map(action => {
+      return async (ctx, next) => {
+        if (action.isStage && ctx.isEnd) {
+          return;
+        }
 
-      if (typeof ctx.isMatchMount !== 'boolean') {
-        ctx.isMatchMount = minimatch(ctx.path, mountPath);
+        await action(ctx, next);
       }
-
-      if (ctx.isMatchMount) {
-        return await stage(ctx, next);
-      }
-
-      return await next();
-    }
+    });
   }
 
-  mount(app, path) {
-    this.merge();
-
+  mount(app, mountPath) {
     app.use(bodyParser({
       jsonLimit: defaultLimit,
       formLimit: defaultLimit,
@@ -114,15 +98,40 @@ class Stage {
       }
     });
     app.context.stage = this;
+    app.context.forward = function forward(url) {
+      let forwardUrl = url;
 
-    this.filters.map(filter => {
-      app.use(this.convert(filter, path));
+      if (url.startsWith('/')) {
+        forwardUrl = this.origin + url;
+      }
+
+      this.forwardUrl = forwardUrl;
+    }
+
+    const starters = this.stages.map(stage => {
+      const actions = this.filterMap[stage].concat(this.defautStages[stage].map(action => {
+        action.isStage = true;
+        return action;
+      }));
+
+      return compose(this.convert(actions));
+    });
+
+    app.use(async (ctx, next) => {
+      const isMatchMount = !mountPath || minimatch(ctx.path, mountPath);
+
+      if (isMatchMount) {
+        for (const fn of starters) {
+          await fn(ctx);
+        }
+      }
+
+      await next();
     });
   }
 
   listen(...args) {
     this.mount(this.app);
-
     this.app.listen.apply(this.app, args);
   }
 }

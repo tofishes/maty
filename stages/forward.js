@@ -1,42 +1,40 @@
 /**
  * 转发请求：
- * 1、使用req.forward(url)
+ * 1、使用ctx.forward(url)
  * 2、router且router.forward = true
- * 3、通过外部设置，req.forwardUrl = path
+ * 3、通过外部设置，ctx.forwardUrl = path
  *
  * 实践：
- * 1、ajax请求未配置router，可以req.forwardUrl = ajax请求地址来转发
+ * 1、ajax请求未配置router，可以ctx.forwardUrl = ajax请求地址来转发
  * 2、router设置了proxy属性为true，例如 验证码接口，需转发后端生成的captcha图片
- * 3、业务中主动req.forward转发
+ * 3、业务中主动ctx.forward转发
  *
  * @param  {[type]} req    [description]
  * @param  {[type]} res    [description]
  * @return {[type]}        [description]
  */
-const log = require('t-log');
+const typeOf = require('../utils/typeof');
 const parseURLMethod = require('../utils/parse-url-method');
 
-function getForwardUrl(req) {
-  if (req.forwardUrl) {
-    return {
-      url: req.forwardUrl
-    };
+function getForwardInfo(ctx) {
+  let method = ctx.method.toLowerCase();
+  let url = ctx.forwardUrl;
+
+  if (url === ctx.path) {
+    ctx.throw(500, 'Can’t forward to same request path');
   }
 
-  const router = req.router;
+  let { forward } = ctx.router || {};
 
-  if (!router || !router.forward) {
-    return {};
-  }
+  if (forward) {
+    if (typeOf(forward).isFunc) {
+      forward = forward(ctx);
+    }
 
-  let method = req.method.toLowerCase();
-  let url = req.path;
-
-  if (router.api) {
-    const urlMethod = parseURLMethod(router.api, method);
+    const urlMethod = parseURLMethod(forward, method);
 
     method = urlMethod.method;
-    url = req.ctx.stage.get('handleAPI')(urlMethod.url, req);
+    url = ctx.stage.get('handleAPI')(urlMethod.url, req);
   }
 
   return { method, url };
@@ -45,42 +43,26 @@ function getForwardUrl(req) {
 // 如果是get请求，为什么不用redirect跳转:
 // 避免redirect url不支持对外访问
 module.exports = async function forward(ctx, next) {
-  const req = ctx.request;
-  const res = ctx.response;
-
-  const { method, url } = getForwardUrl(req);
+  const { method, url } = getForwardInfo(ctx);
 
   // 无跳转url
   if (!url) {
     return next();
   }
 
-  const request = req.httpRequest();
+  const request = ctx.httpRequest();
   const options = {
     url,
-    qs: req.query,
-    body: req.body
+    qs: ctx.query,
+    body: ctx.reqBody
   };
 
   // 记录apiInfo数据
-  res.apiInfo.proxy = {
-    api: req.path,
-    query: req.query,
-    body: req.body
+  ctx.apiInfo.proxy = {
+    api: url,
+    query: ctx.query,
+    body: ctx.reqBody
   };
 
-  return new Promise((resolve, reject) => {
-    const timer = log.time();
-
-    ctx.body = request[method](options).on('response', response => {
-      res.set(response.headers);
-
-      res.apiInfo.proxy.headers = response.headers;
-      res.apiInfo.proxy.consumeTime = timer.end();
-
-      resolve(response);
-    }).on('error', function(err) {
-      reject(err);
-    });
-  });
+  ctx.body = request[method](options);
 }

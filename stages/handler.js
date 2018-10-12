@@ -1,18 +1,12 @@
-const typeOf = require('../utils/typeof');
-const Task = require('../libs/task');
 const valueChain = require('value-chain');
 
-function isFunc(obj) {
-  return typeOf(obj).is('function');
-}
-function isString(obj) {
-  return typeOf(obj).is('string');
-}
+const typeOf = require('../utils/typeof');
+const Task = require('../libs/task');
+
 function handleConfig(originConfig, ctx) {
-  const req = ctx.request;
   let config = originConfig;
 
-  if (isFunc(config)) {
+  if (typeOf(config).isFunc) {
     config = config(ctx);
   }
 
@@ -24,7 +18,7 @@ function handleConfig(originConfig, ctx) {
   const isInterceptor = config.type === 'interceptor';
 
   // api可以是字符串，字符串数组，对象混合字符串数组，函数(返回前面3中类型数据)
-  if (isFunc(api)) {
+  if (typeOf(api).isFunc) {
     api = api.call(config, ctx);
   }
 
@@ -48,7 +42,7 @@ function handleConfig(originConfig, ctx) {
 
   // 如果是拦截器，需要把handle合并进来
   // 拦截器api为非字符串型时，仅支持数组项内的handle，不支持全局handle
-  if (isString(api)) {
+  if (typeOf(api).isString) {
     const handle = isInterceptor ? config.handle : null;
     api = [{ api, handle }];
   }
@@ -60,39 +54,34 @@ function handleConfig(originConfig, ctx) {
   /*
    * 统一格式为： [{api, query, body}...]，转为apiTask， 过滤掉item为函数情况下返回false
    */
-  req.apis = api.map(item => {
+  api.map(item => {
     const isSeries = item.series || config.series;
     const taskName = isSeries ? 'series' : 'parallel';
-    let task = req.apisTask[taskName];
+    let task = ctx.apisTask[taskName];
 
     if (!task) {
       task = new Task(isSeries).context(ctx);
-      req.apisTask[taskName] = task;
+      ctx.apisTask[taskName] = task;
     }
 
     task.addApiTask(item, config);
-
-    return item;
   });
-
-  console.log(__filename, ': ', config)
 
   return config;
 }
 
 async function handleInterceptor(ctx) {
-  const req = ctx.request;
-  if (!req.interceptors.length) {
+  if (!ctx.interceptors.length) {
     return;
   }
 
-  req.interceptors = req.interceptors.map(interceptor => handleConfig(interceptor, ctx));
+  ctx.interceptors = ctx.interceptors.map(interceptor => handleConfig(interceptor, ctx));
 
-  const seriesTask = req.apisTask.series;
+  const seriesTask = ctx.apisTask.series;
 
   if (seriesTask) {
     await seriesTask.run();
-    req.apisTask.series = null;
+    ctx.apisTask.series = null;
   }
 }
 
@@ -120,17 +109,16 @@ async function handleData(router, ctx) {
  * @return {[type]}        [description]
  */
 async function handler(ctx, next) {
-  const req = ctx.request;
   await handleInterceptor(ctx);
 
   if (ctx.isEnd) {
-    return;
+    return next();
   }
 
-  req.router = handleConfig(req.router, ctx);
+  ctx.router = handleConfig(ctx.router, ctx);
 
-  const seriesTask = req.apisTask.series;
-  const parallelTask = req.apisTask.parallel;
+  const seriesTask = ctx.apisTask.series;
+  const parallelTask = ctx.apisTask.parallel;
 
   if (seriesTask) {
     await seriesTask.run();
@@ -140,7 +128,7 @@ async function handler(ctx, next) {
     await parallelTask.run();
   }
 
-  await handleData(req.router, ctx);
+  await handleData(ctx.router, ctx);
 
   return next();
 }

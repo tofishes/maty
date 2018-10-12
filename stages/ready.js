@@ -8,26 +8,28 @@ const urlInfo = require('../utils/url-info');
  * @param  {Function} next [description]
  * @return {[type]}        [description]
  */
-module.exports = async function pageInfo(ctx, next) {
-  const req = ctx.request;
-  const { moduleName, pathes, pathname } = urlInfo(req.path);
-  const ua = parser(req.get('User-Agent'));
+module.exports = async function ready(ctx, next) {
+  const { moduleName, pathes, pathname } = urlInfo(ctx.path);
+  const ua = parser(ctx.get('User-Agent'));
 
-  const type = req.get('X-Requested-With') || '';
+  const type = ctx.get('X-Requested-With') || '';
   const xhr = type.toLowerCase() === 'xmlhttprequest';
+  const reqBody = ctx.request.body;
 
-  Object.assign(req, {
+  Object.assign(ctx, {
     ua,
     moduleName,
     pathes,
     pathname,
-    xhr
+    xhr,
+    reqBody
   });
 
-  ctx.state.request = req;
+  ctx.state.request = ctx.request;
   ctx.state.response = ctx.response;
   ctx.apiData = valueChain.set({});
   ctx.apiInfo = {};
+  ctx.apisTask = {};
 
   return next();
 }

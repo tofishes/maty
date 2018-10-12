@@ -14,11 +14,10 @@ function disableCache(disabled) {
 
 
 function getRequest() {
-  const req = this;
-  const config = req.httpRequestConfig || {};
+  const config = this.httpRequestConfig || {};
 
-  if (req.router && req.router.timeout) {
-    config.timeout = req.router.timeout;
+  if (this.router && this.router.timeout) {
+    config.timeout = this.router.timeout;
   }
 
   const httpRequest = request(config);
@@ -32,17 +31,14 @@ function getRequest() {
 }
 
 module.exports = async function initHttpRequest(ctx, next) {
-  const { request, response } = ctx;
-
-  request.httpRequest = getRequest;
-  request.apisTask = {};
-  response.disableCache = disableCache.bind(response);
+  ctx.httpRequest = getRequest;
+  ctx.disableCache = disableCache;
 
   // 保证在router.handle等处自处理响应时有效
-  const disablePageCache = request.router && request.router.pageCache === false;
-  const disableAjaxCache = request.xhr && this.get('ajaxCache') === false;
+  const disablePageCache = ctx.router && ctx.router.pageCache === false;
+  const disableAjaxCache = ctx.xhr && this.get('ajaxCache') === false;
 
-  response.disableCache(disablePageCache || disableAjaxCache);
+  ctx.disableCache(disablePageCache || disableAjaxCache);
 
   return next();
 };

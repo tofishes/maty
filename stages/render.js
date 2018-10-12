@@ -2,10 +2,9 @@ const minimatch = require('minimatch');
 const log = require('t-log');
 
 function render(ctx, next) {
-  const { response, stage } = ctx;
-  const filePath = response.viewFile;
+  const { stage, viewFile } = ctx;
 
-  if (!filePath) {
+  if (!viewFile) {
     if (Object.keys(ctx.apiData).length) {
       return ctx.body = ctx.apiData;
     }
@@ -14,25 +13,25 @@ function render(ctx, next) {
   }
 
   const excludes = stage.get('viewExclude')
-    .filter(exclude => minimatch(filePath, exclude));
+    .filter(exclude => minimatch(viewFile, exclude));
 
   // 匹配到需排除渲染的路径
   if (excludes.length) {
-    log.warn(`viewPath: ${response.viewPath} is excluded!`);
+    log.warn(`viewPath: ${ctx.viewPath} is excluded!`);
 
     return next();
   }
 
-  const engine = stage.engines[response.viewExt];
+  const engine = stage.engines[ctx.viewExt];
 
   if (!engine) {
-    throw new Error(`File type '${response.viewExt}' has no template engine`);
+    return ctx.throw(`File type '${ctx.viewExt}' has no template engine`);
   }
 
   const data = Object.assign({}, ctx.state, ctx.apiData);
 
   return new Promise((resolve, reject) => {
-    engine(filePath, data, (err, html) => {
+    engine(viewFile, data, (err, html) => {
       if (err) {
         reject(err);
       } else {

@@ -3,12 +3,11 @@ const fs = require('fs');
 const typeOf = require('../utils/typeof');
 
 async function getViewPath(ctx, next) {
-  const { request, response, stage} = ctx;
-  const router = request.router || {};
+  const { stage, router = {} } = ctx;
 
-  let view = router.view || request.path;
+  let view = router.view || ctx.path;
 
-  if (typeOf(view).is('function')) {
+  if (typeOf(view).isFunc) {
     view = view.call(router, ctx);
 
     if (!view) {
@@ -30,20 +29,20 @@ async function getViewPath(ctx, next) {
     view += ext;
   }
 
-  response.viewPath = view;
-  response.viewExt = ext;
+  ctx.viewPath = view;
+  ctx.viewExt = ext;
 
   const filePath = path.join(stage.get('views'), view);
 
   try {
     fs.accessSync(filePath, fs.constants.R_OK);
-    response.viewFile = filePath;
+    ctx.viewFile = filePath;
   } catch (e) {
     const indexFile = filePath.replace(ext, `/index${ext}`);
 
     fs.access(indexFile, error => {
       if (!error) {
-        response.viewFile = indexFile;
+        ctx.viewFile = indexFile;
       }
     });
   }

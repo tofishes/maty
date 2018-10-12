@@ -35,11 +35,11 @@ function matchRouter(pathname, routers) {
   return {};
 }
 
-function matchInterceptor(req, interceptors) {
-  const pathname = req.path;
+function matchInterceptor(ctx, interceptors) {
+  const pathname = ctx.path;
 
   return interceptors.filter(interceptor => {
-    if (req.xhr && interceptor.ajax !== true) {
+    if (ctx.xhr && interceptor.ajax !== true) {
       return false;
     }
 
@@ -57,31 +57,31 @@ function matchInterceptor(req, interceptors) {
 const defaultMethods = ['get'];
 
 async function match(ctx, next) {
-  const { request, stage } = ctx;
+  const { stage } = ctx;
 
-  const { router, param = {} } = matchRouter(request.path, stage.get('routers'));
-  request.interceptors = matchInterceptor(request, stage.get('interceptors'));
+  const { router, param = {} } = matchRouter(ctx.path, stage.get('routers'));
+  ctx.interceptors = matchInterceptor(ctx, stage.get('interceptors'));
 
-  request.param = param;
+  ctx.param = param;
 
   // 未匹配到路由
   if (!router) {
     return next();
   }
 
-  const method = request.method.toLowerCase();
+  const method = ctx.method.toLowerCase();
   const supportRouter = (router.methods || defaultMethods).includes(method);
 
   if (!supportRouter) {
     ctx.status = 405;
     ctx.body = `${method.toUpperCase()} Method Not Allowed`;
-    return;
+    return next();
   }
 
-  request.router = router;
+  ctx.router = router;
   // 合并参数
-  Object.assign(request.query, param);
-  Object.assign(request.body, param);
+  Object.assign(ctx.query, param);
+  Object.assign(ctx.reqBody, param);
 
   return next();
 }

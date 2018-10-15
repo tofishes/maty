@@ -123,7 +123,7 @@ class Task {
           Object.assign(ctx.apiInfo[dataName], { consumeTime, headers, resBody });
 
           if (apiConfig.handle) {
-            result = await apiConfig.handle.call(config, result, req, res);
+            result = await apiConfig.handle.call(config, result, ctx);
           }
 
           ctx.apiData[dataName] = valueChain.set(result);
@@ -166,7 +166,7 @@ class Task {
         }
 
         if (apiConfig.handle) {
-          result = apiConfig.handle.call(config, valueChain.set(result), req, res);
+          result = apiConfig.handle.call(config, valueChain.set(result), ctx);
         }
 
         ctx.apiData[dataName] = valueChain.set(result);

@@ -31,7 +31,6 @@ class Task {
     if (!this.tasks.length) {
       return null;
     }
-
     return new Promise((resolve, reject) => {
       async[this.props.mode](this.tasks, (error, results) => {
         if (error) {
@@ -62,7 +61,7 @@ class Task {
     const name = config.name;
     let cache = config.cache;
 
-    async function action(callback) {
+    function action(callback) {
       const timer = log.time();
 
       let apiConfig;
@@ -123,7 +122,7 @@ class Task {
           Object.assign(ctx.apiInfo[dataName], { consumeTime, headers, resBody });
 
           if (apiConfig.handle) {
-            result = await apiConfig.handle.call(config, result, ctx);
+            result = apiConfig.handle.call(config, result, ctx);
           }
 
           ctx.apiData[dataName] = valueChain.set(result);

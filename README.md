@@ -5,3 +5,8 @@
 
 
 req.forwardUrl
+
+
+// todos:
+
+task run 模式修订，在api请求完成后一次handle并组合结果，使用原生方法处理并行or串行

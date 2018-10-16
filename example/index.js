@@ -45,8 +45,10 @@ stage.filter('response', async (ctx, next) => {
   });
 });
 
-stage.listen(8080, () => {
+const server = stage.listen(8080, () => {
   const startInfo = 'server run at http://localhost:8080';
 
   log.info(startInfo);
 });
+
+module.exports = { server, stage };

@@ -1,20 +1,25 @@
 module.exports = {
-  '/forward/inner/page': {
+  '/forward/inner': {
     handle(data, ctx) {
-      ctx.forward('/comments');
+      ctx.forward('/comment/list');
     }
   },
-  '/forward/outer/domain': {
+  '/forward/outer': {
     handle(data, ctx) {
       ctx.forward('http://www.baidu.com');
     }
   },
-  '/forward/api/comments': {
-    forward: '/api/comments'
+  '/forward/self': {
+    handle(data, ctx) {
+      ctx.forward('/forward/self');
+    }
   },
-  '/forward/api/comments/func': {
+  '/router/forward/string': {
+    forward: '/comment/list'
+  },
+  '/router/forward/function': {
     forward() {
-      return '/api/comments';
+      return '/comment/list';
     }
   }
 }

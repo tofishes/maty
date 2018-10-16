@@ -36,7 +36,7 @@ module.exports = async function initHttpRequest(ctx, next) {
 
   // 保证在router.handle等处自处理响应时有效
   const disablePageCache = ctx.router && ctx.router.pageCache === false;
-  const disableAjaxCache = ctx.xhr && this.get('ajaxCache') === false;
+  const disableAjaxCache = ctx.xhr && ctx.stage.get('ajaxCache') === false;
 
   ctx.disableCache(disablePageCache || disableAjaxCache);
 

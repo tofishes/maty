@@ -9,7 +9,7 @@ const urlInfo = require('../utils/url-info');
  * @return {[type]}        [description]
  */
 module.exports = async function ready(ctx, next) {
-  const { moduleName, pathes, pathname } = urlInfo(ctx.path);
+  const { moduleName, pathes } = urlInfo(ctx.path);
   const ua = parser(ctx.get('User-Agent'));
 
   const type = ctx.get('X-Requested-With') || '';
@@ -20,7 +20,6 @@ module.exports = async function ready(ctx, next) {
     ua,
     moduleName,
     pathes,
-    pathname,
     xhr,
     reqBody
   });

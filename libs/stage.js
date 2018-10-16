@@ -6,8 +6,8 @@ const minimatch = require('minimatch');
 
 // request stages
 const ready = require('../stages/ready');
-const initHttpRequest = require('../stages/init-http-request');
 const match = require('../stages/match');
+const initHttpRequest = require('../stages/init-http-request');
 // response stages
 const handler = require('../stages/handler');
 const forward = require('../stages/forward');
@@ -22,7 +22,7 @@ const defaultLimit = 1000 * 1024 * 1024; // 1000M
 class Stage {
   constructor() {
     this.defautStages = {
-      request: [ready, initHttpRequest, match],
+      request: [ready, match, initHttpRequest],
       response: [handler, forward, getView, render]
     };
     this.stages = Object.keys(this.defautStages);
@@ -138,7 +138,7 @@ class Stage {
 
   listen(...args) {
     this.mount(this.app);
-    this.app.listen.apply(this.app, args);
+    return this.app.listen.apply(this.app, args);
   }
 }
 

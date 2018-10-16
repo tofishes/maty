@@ -28,7 +28,7 @@ function render(ctx, next) {
     return ctx.throw(`File type '${ctx.viewExt}' has no template engine`);
   }
 
-  const data = Object.assign({}, ctx.state, ctx.apiData);
+  const data = Object.assign({ ctx }, ctx.state, ctx.apiData);
 
   return new Promise((resolve, reject) => {
     engine(viewFile, data, (err, html) => {

@@ -34,7 +34,7 @@ function getForwardInfo(ctx) {
     const urlMethod = parseURLMethod(forward, method);
 
     method = urlMethod.method;
-    url = ctx.stage.get('handleAPI')(urlMethod.url, req);
+    url = ctx.stage.get('handleAPI')(urlMethod.url, ctx);
   }
 
   return { method, url };

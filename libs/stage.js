@@ -105,13 +105,18 @@ class Stage {
     });
     app.context.stage = this;
     app.context.forward = function forward(url) {
+      const ctx = this;
       let forwardUrl = url;
 
-      if (url.startsWith('/')) {
-        forwardUrl = this.origin + url;
+      if (url === ctx.path) {
+        ctx.throw(500, 'Can’t forward to same request path');
       }
 
-      this.forwardUrl = forwardUrl;
+      if (url.startsWith('/')) {
+        forwardUrl = ctx.origin + url;
+      }
+
+      ctx.forwardUrl = forwardUrl;
     }
 
     const starters = this.stages.map(stage => {

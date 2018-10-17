@@ -1,41 +1,41 @@
 const request = require('supertest');
 
-const { server, stage } = require('../example');
+const { app } = require('../example');
 const comments = require('../example/data/comment-list.json');
 const names = require('../example/data/name-list.json');
 
 test('router 405 not support method', done => {
-  request(server)
+  request(app.callback())
     .post('/comment/list')
     .expect(405, done);
 });
 
 test('router.api can be function', done => {
-  request(server)
-    .post('/router.api/is/function')
+  request(app.callback())
+    .get('/router.api/is/function')
     .expect(200, /api-is-function/ ,done);
 });
 
 test('router.view can be function', done => {
-  request(server)
-    .post('/router.view/is/function')
+  request(app.callback())
+    .get('/router.view/is/function')
     .expect(200, /view-is-function/ ,done);
 });
 
 test('router.view config', done => {
-  request(server)
-    .post('/router.view/is/string')
+  request(app.callback())
+    .get('/router.view/is/config')
     .expect(200, /view-is-string/ ,done);
 });
 
 test('router.view default to request path', done => {
-  request(server)
-    .post('/view-is-default-as-path')
+  request(app.callback())
+    .get('/view-is-default-as-path')
     .expect(200, `view-is-default-as-path-${comments.length}` ,done);
 });
 
 test('router.cache valid', done => {
-  const client = request(app);
+  const client = request(app.callback());
 
   client.get('/router.cache/expires')
     .end((err, res) => {
@@ -47,7 +47,7 @@ test('router.cache valid', done => {
 });
 
 test('router.cache expired', done => {
-  const client = request(app);
+  const client = request(app.callback());
 
   client.get('/router.cache/expires')
     .end((err, res) => {
@@ -66,7 +66,7 @@ test('router.cache expired', done => {
 });
 
 test('router.cache can be function', done => {
-  const client = request(app);
+  const client = request(app.callback());
 
   client.get('/router.cache/expires/300')
     .end((err, res) => {
@@ -78,37 +78,50 @@ test('router.cache can be function', done => {
 });
 
 test('router.handle use ctx.forward', done => {
-  request(server)
-    .post('/router.handle/use/ctx.forward')
+  request(app.callback())
+    .get('/router.handle/use/ctx.forward')
     .expect(200, 'hello world', done);
 });
 
 test('router.api use ctx.forward', done => {
-  request(server)
-    .post('/router.api/use/ctx.forward')
+  request(app.callback())
+    .get('/router.api/use/ctx.forward')
     .expect(200, 'hello world', done);
 });
 
 test('router.view use ctx.forward', done => {
-  request(server)
-    .post('/router.view/use/ctx.forward')
+  request(app.callback())
+    .get('/router.view/use/ctx.forward')
     .expect(200, 'hello world', done);
 });
 
 test('router.api is Array', done => {
-  request(server)
-    .post('/router.api/is/array')
+  request(app.callback())
+    .get('/router.api/is/array')
     .expect(200, `comments-size-${comments.length}-and-names-size-${ names.length }` ,done);
 });
 
 test('router.api is Array and series', done => {
-  request(server)
-    .post('/router.api/is/series')
+  request(app.callback())
+    .get('/router.api/is/series')
     .expect(200, `comments-size-${comments.length}-and-names-size-${ names.length }` ,done);
 });
 
 test('router.timeout', done => {
-  request(server)
-    .post('/router.timeout')
+  request(app.callback())
+    .get('/router.timeout')
     .expect(504, 'timeout', done)
+});
+
+test('router.proxy is string', done => {
+  request(app.callback())
+    .get('/router/proxy/string')
+    .expect(200, /鞋子非常好，质量棒棒哒/, done);
+
+});
+
+test('router.proxy is function', done => {
+  request(app.callback())
+    .get('/router/proxy/function')
+    .expect(200, /鞋子非常好，质量棒棒哒/, done);
 });

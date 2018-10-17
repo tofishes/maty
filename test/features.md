@@ -13,8 +13,6 @@
 * forward outer page
 * forward to self
 * forward in interceptor
-* router.forward is string
-* router.forward is function
 
 * router 405 not matched method
 * router.api can be function
@@ -23,10 +21,12 @@
 * router.view default to request path
 * router.cache valid or expired
 * router.cache can be function
-* router.handle api view is function then forward
+* router.handle|api|view is function then forward
 * router.api is Array
 * router.api is Array and series
 * router.timeout
+* router.proxy is string
+* router.proxy is function
 
 * query
 * reqBody

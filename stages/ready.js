@@ -24,8 +24,6 @@ module.exports = async function ready(ctx, next) {
     reqBody
   });
 
-  ctx.state.request = ctx.request;
-  ctx.state.response = ctx.response;
   ctx.apiData = valueChain.set({});
   ctx.apiInfo = {};
   ctx.apisTask = {};

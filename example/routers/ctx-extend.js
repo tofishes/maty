@@ -10,13 +10,13 @@ module.exports = {
     }
   },
   '/ctx-extend/reqbody/:id': {
-    method: 'post',
+    methods: 'post',
     handle(data, ctx) {
       ctx.body = `${ctx.reqBody.id}: ${ctx.reqBody.name}`;
     }
   },
   '/ctx-extend/files': {
-    method: 'post',
+    methods: 'post',
     handle(data, ctx) {
       const file = ctx.request.files.join('');
       ctx.body = files;
@@ -25,12 +25,12 @@ module.exports = {
   '/ctx-extend/ua': {
     view: 'ua'
   },
-  '/ctx-extend/modulename': {
+  '/ctx-extend/module/sub': {
     handle(data, ctx) {
       ctx.body = ctx.moduleName;
     }
   },
-  '/ctx-extend/pathes': {
+  '/ctx-extend/second/three': {
     handle(data, ctx) {
       ctx.body = ctx.pathes.join(',');
     }

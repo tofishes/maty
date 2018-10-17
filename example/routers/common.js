@@ -13,8 +13,8 @@ module.exports = {
     },
     view: 'comments'
   },
-  '/engine/marko': {
-    view: 'engine/marko.marko'
+  '/engine/jade': {
+    view: 'engine/jade.jade'
   },
   '/redirect': {
     handle(data, ctx) {

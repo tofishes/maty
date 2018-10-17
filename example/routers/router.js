@@ -95,4 +95,12 @@ module.exports = {
       ctx.body = 'timeout';
     }
   },
+  '/router/proxy/string': {
+    proxy: '/comment/list'
+  },
+  '/router/proxy/function': {
+    proxy() {
+      return '/api/comments';
+    }
+  }
 }

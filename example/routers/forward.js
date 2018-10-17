@@ -13,13 +13,5 @@ module.exports = {
     handle(data, ctx) {
       ctx.forward('/forward/self');
     }
-  },
-  '/router/forward/string': {
-    forward: '/comment/list'
-  },
-  '/router/forward/function': {
-    forward() {
-      return '/comment/list';
-    }
   }
 }

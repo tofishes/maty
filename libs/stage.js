@@ -109,7 +109,9 @@ class Stage {
       let forwardUrl = url;
 
       if (url === ctx.path) {
-        ctx.throw(500, 'Can’t forward to same request path');
+        ctx.status = 500;
+        ctx.body = 'Can’t forward to same request path';
+        return;
       }
 
       if (url.startsWith('/')) {

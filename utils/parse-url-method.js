@@ -9,8 +9,12 @@ function parseURLMethod(api, defaultMethod = 'get') {
   let url = api;
 
   if (~markIndex) {
-    method = url.substr(0, markIndex);
-    url = url.substr(markIndex + 1);
+    const prefix = url.substr(0, markIndex);
+    // 是支持的方法
+    if (~methods.indexOf(prefix)) {
+      method = prefix;
+      url = url.substr(markIndex + 1);
+    }
   }
 
   method = method.toLowerCase();

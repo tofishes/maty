@@ -31,7 +31,7 @@ test('router.view config', done => {
 test('router.view default to request path', done => {
   request(app.callback())
     .get('/view-is-default-as-path')
-    .expect(200, `view-is-default-as-path-${comments.length}` ,done);
+    .expect(200, `view-is-default-as-path-${comments.data.list.length}` ,done);
 });
 
 test('router.cache valid', done => {
@@ -89,28 +89,22 @@ test('router.api use ctx.forward', done => {
     .expect(200, 'hello world', done);
 });
 
-test('router.view use ctx.forward', done => {
-  request(app.callback())
-    .get('/router.view/use/ctx.forward')
-    .expect(200, 'hello world', done);
-});
-
 test('router.api is Array', done => {
   request(app.callback())
     .get('/router.api/is/array')
-    .expect(200, `comments-size-${comments.length}-and-names-size-${ names.length }` ,done);
+    .expect(200, `comments-size-${comments.data.list.length}-and-names-size-${ names.length }` ,done);
 });
 
 test('router.api is Array and series', done => {
   request(app.callback())
     .get('/router.api/is/series')
-    .expect(200, `comments-size-${comments.length}-and-names-size-${ names.length }` ,done);
+    .expect(200, `comments-size-${comments.data.list.length}-and-names-size-${ names.length }` ,done);
 });
 
 test('router.timeout', done => {
   request(app.callback())
     .get('/router.timeout')
-    .expect(504, 'timeout', done)
+    .expect(504, /timeout/i, done)
 });
 
 test('router.proxy is string', done => {

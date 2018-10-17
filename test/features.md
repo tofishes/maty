@@ -21,7 +21,7 @@
 * router.view default to request path
 * router.cache valid or expired
 * router.cache can be function
-* router.handle|api|view is function then forward
+* router.handle|api is function then forward
 * router.api is Array
 * router.api is Array and series
 * router.timeout

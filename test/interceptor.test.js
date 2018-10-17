@@ -26,5 +26,5 @@ test('interceptor to supply common data', done => {
 test('interceptor series', done => {
   request(app.callback())
     .get('/interceptor/user/comments')
-    .expect(200, `${comments.length}`, done);
+    .expect(200, `${comments.data.list.length}`, done);
 });

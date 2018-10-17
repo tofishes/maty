@@ -18,8 +18,7 @@ module.exports = {
   '/ctx-extend/files': {
     methods: 'post',
     handle(data, ctx) {
-      const file = ctx.request.files.join('');
-      ctx.body = files;
+      ctx.body = ctx.request.files;
     }
   },
   '/ctx-extend/ua': {

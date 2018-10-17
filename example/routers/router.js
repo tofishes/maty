@@ -20,8 +20,10 @@ module.exports = {
       series: true
     }, {
       api: '/api/comments',
-      handle(data) {
-        if (data.getList('names').length) {
+      handle(data, ctx) {
+        const names = ctx.apiData.getList('names');
+
+        if (names.length) {
           return data;
         } else {
           return {};
@@ -52,23 +54,19 @@ module.exports = {
     }
   },
   '/router.cache/expires': {
-    'get': {
-      api: '/api/date',
-      cache: 500,
-      handle(data) {
-        ctx.body = data.date;
-      }
+    api: '/api/date',
+    cache: 500,
+    handle(data, ctx) {
+      ctx.body = data.date;
     }
   },
   '/router.cache/expires/:time': {
-    'get': {
-      api: '/api/date',
-      cache(ctx) {
-        return +ctx.param.time;
-      },
-      handle(data) {
-        ctx.body = data.date;
-      }
+    api: '/api/date',
+    cache(ctx) {
+      return +ctx.param.time;
+    },
+    handle(data, ctx) {
+      ctx.body = data.date;
     }
   },
   '/router.api/use/ctx.forward': {
@@ -81,18 +79,13 @@ module.exports = {
       ctx.forward('/hello/world')
     }
   },
-  '/router.view/use/ctx.forward': {
-    view(ctx) {
-      ctx.forward('/hello/world')
-    }
-  },
   '/router.timeout': {
     api: 'http://www.baidu.com',
     name: 'baidu',
     timeout: 1,
     handle(data, ctx) {
       ctx.status = data.baidu.code;
-      ctx.body = 'timeout';
+      ctx.body = data.baidu.message;
     }
   },
   '/router/proxy/string': {

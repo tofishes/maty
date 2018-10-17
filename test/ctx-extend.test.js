@@ -20,26 +20,22 @@ test('ctx.reqBody', done => {
     .expect(200, '123: hi', done)
 });
 
-test('upload files', done => {
+test('ctx.request.files', done => {
   request(app.callback())
     .post('/ctx-extend/files')
     .field('type', 'upload')
     .attach('avatar', `${__dirname}/avatar.jpg`)
     .expect(res => {
-      const body = res.body;
-      if (body.type !== 'upload' || body.avatar.originalFilename !== 'avatar.jpg'
-        || !~body.avatar.path.indexOf('/uploads')
-        || !body.avatar.path.endsWith('.jpg')
-      ) {
-        throw new Error('upload failed');
-      }
+      const body = JSON.parse(res.text);
+      const avatar = body.avatar;
 
-      // exec(`rm -rf ${process.cwd()}/uploads`);
+      expect(avatar.name).toBe('avatar.jpg');
+      expect(avatar.path).toMatch(/\.jpg/i);
     })
     .end(done);
 });
 
-test('ua', done => {
+test('ctx.ua', done => {
   const chrome = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36';
 
   request(app.callback())
@@ -48,19 +44,19 @@ test('ua', done => {
     .expect(200, 'os-Mac OS|browser-Chrome', done)
 });
 
-test('moduleName', done => {
+test('ctx.moduleName', done => {
   request(app.callback())
     .get('/ctx-extend/module/sub')
     .expect(200, 'ctx-extend', done)
 });
 
-test('pathes', done => {
+test('ctx.pathes', done => {
   request(app.callback())
     .get('/ctx-extend/second/three')
     .expect(200, 'ctx-extend,second,three', done)
 });
 
-test('xhr', done => {
+test('ctx.xhr', done => {
   request(app.callback())
     .get('/ctx-extend/xhr')
     .set('X-Requested-With', 'XMLHttpRequest')

@@ -20,18 +20,14 @@ function getForwardInfo(ctx) {
   let method = ctx.method.toLowerCase();
   let url = ctx.forwardUrl;
 
-  if (url === ctx.path) {
-    ctx.throw(500, 'Can’t forward to same request path');
-  }
+  let { proxy } = ctx.router || {};
 
-  let { forward } = ctx.router || {};
-
-  if (forward) {
-    if (typeOf(forward).isFunc) {
-      forward = forward(ctx);
+  if (proxy) {
+    if (typeOf(proxy).isFunc) {
+      proxy = proxy(ctx);
     }
 
-    const urlMethod = parseURLMethod(forward, method);
+    const urlMethod = parseURLMethod(proxy, method);
 
     method = urlMethod.method;
     url = ctx.stage.get('handleAPI')(urlMethod.url, ctx);

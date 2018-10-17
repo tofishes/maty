@@ -2,6 +2,14 @@ const path = require('path');
 const fs = require('fs');
 const typeOf = require('../utils/typeof');
 
+function access(filePath) {
+  return new Promise(resolve => {
+    fs.access(filePath, error => {
+      resolve(error ? null : filePath);
+    });
+  });
+}
+
 async function getViewPath(ctx, next) {
   const { stage, router = {} } = ctx;
 
@@ -33,19 +41,14 @@ async function getViewPath(ctx, next) {
   ctx.viewExt = ext;
 
   const filePath = path.join(stage.get('views'), view);
+  let viewFile = await access(filePath);
 
-  try {
-    fs.accessSync(filePath, fs.constants.R_OK);
-    ctx.viewFile = filePath;
-  } catch (e) {
+  if (!viewFile) {
     const indexFile = filePath.replace(ext, `/index${ext}`);
-
-    fs.access(indexFile, error => {
-      if (!error) {
-        ctx.viewFile = indexFile;
-      }
-    });
+    viewFile = await access(indexFile);
   }
+
+  ctx.viewFile = viewFile;
 
   return next();
 }

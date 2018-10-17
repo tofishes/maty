@@ -1,15 +1,17 @@
+const jade = require('jade');
 const log = require('t-log');
 const maty = require('../index');
-const apiMap = require('./api-map');
 
 const stage = maty({
   interceptorDir: `${__dirname}/interceptors`,
   routerDir: `${__dirname}/routers`,
   viewDir: `${__dirname}/views`,
-  handleAPI(apiUrl) {
-    const apiDomain = apiMap[apiUrl] || '';
+  handleAPI(apiUrl, ctx) {
+    if (apiUrl.startsWith('/')) {
+      return `${ctx.origin}${apiUrl}`;
+    }
 
-    return apiDomain + apiUrl;
+    return apiUrl;
   }
 });
 
@@ -26,12 +28,12 @@ stage.app.use(async (ctx, next) => {
   log.warn(`this request ${ctx.path} cost time ${timer.end()}`)
 });
 
-
-require('marko/node-require').install();  // eslint-disable-line
-stage.engine('marko', (filePath, data, callback) => {
-  const template = require(filePath); // eslint-disable-line
-
-  template.renderToString(data, callback);
+stage.engine('jade', (filePath, data, callback) => {
+  const fn = jade.compileFile(filePath, {
+    cache: false
+  });
+  const html = fn(data);
+  callback(null, html);
 });
 
 stage.filter('response', async (ctx, next) => {
@@ -45,10 +47,6 @@ stage.filter('response', async (ctx, next) => {
   });
 });
 
-const server = stage.listen(8080, () => {
-  const startInfo = 'server run at http://localhost:8080';
+stage.mount(stage.app);
 
-  log.info(startInfo);
-});
-
-module.exports = { server, stage };
+module.exports = { stage, app: stage.app };

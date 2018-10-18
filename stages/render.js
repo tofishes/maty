@@ -1,7 +1,7 @@
 const minimatch = require('minimatch');
 const log = require('t-log');
 
-function render(ctx, next) {
+async function render(ctx, next) {
   const { stage, viewFile } = ctx;
 
   if (!viewFile) {
@@ -30,16 +30,11 @@ function render(ctx, next) {
 
   const data = Object.assign({ ctx }, ctx.state, ctx.apiData);
 
-  return new Promise((resolve, reject) => {
-    engine(viewFile, data, (err, html) => {
-      if (err) {
-        reject(err);
-      } else {
-        ctx.body = html;
-        resolve(html);
-      }
-    });
-  });
+  try {
+    ctx.body = await engine(viewFile, data);
+  } catch (e) {
+    ctx.throw(e);
+  }
 }
 
 module.exports = render;

@@ -87,7 +87,17 @@ module.exports = (args = {}) => {
   });
   stage.set('nunjucks', nunjucks);
   stage.set('nunjucksEnv', nunjucksEnv);
-  stage.engine('njk', nunjucksEnv.render.bind(nunjucksEnv));
+  stage.engine('njk', (filePath, data) => {
+    return new Promise((resolve, reject) => {
+      nunjucksEnv.render(filePath, data, (error, html) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(html);
+        }
+      });
+    });
+  });
   stage.set('view engine', 'njk');
 
   return stage;

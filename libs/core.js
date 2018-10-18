@@ -1,8 +1,9 @@
 const glob = require('glob');
 const nunjucks = require('nunjucks');
+const cache = require("lru-cache");
 
 const env = require('../utils/env');
-const cache = require("lru-cache");
+const makedir = require('../utils/makedir');
 const parseMultiName = require('../utils/parse-multi-name');
 const parseRouter = require('./parse-router');
 const Stage = require('./stage');
@@ -46,7 +47,8 @@ module.exports = (args = {}) => {
     apiDataCache = cache(),                 // 接口数据缓存方法，默认lru-cache实现
     apiDataName = simpleApiDataName,        // 接口数据名方法，默认为获取api地址最后一个/后面的单词名
     handleAPI = url => url,                 // router.api地址预处理方法，默认返回自身
-    ajaxCache = true                        // 是否允许缓存ajax响应结果，默认允许缓存
+    ajaxCache = true,                       // 是否允许缓存ajax响应结果，默认允许缓存
+    uploadDir = defaultUploadDir
   } = args;
 
   const interceptorMap = loadRoutes(interceptorDir);
@@ -73,7 +75,9 @@ module.exports = (args = {}) => {
   stage.set('handleAPI', handleAPI);
 
   stage.set('ajaxCache', ajaxCache);
-  stage.set('uploadDir', defaultUploadDir);
+  stage.set('uploadDir', uploadDir);
+
+  makedir(uploadDir);
 
   // 添加默认模板引擎
   const nunjucksEnv = nunjucks.configure(viewDir, {

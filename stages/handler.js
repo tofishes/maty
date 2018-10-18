@@ -3,11 +3,11 @@ const valueChain = require('value-chain');
 const typeOf = require('../utils/typeof');
 const Task = require('../libs/task');
 
-function handleConfig(originConfig, ctx) {
+async function handleConfig(originConfig, ctx) {
   let config = originConfig;
 
   if (typeOf(config).isFunc) {
-    config = config(ctx);
+    config = await config(ctx);
   }
 
   if (!config) {
@@ -19,13 +19,13 @@ function handleConfig(originConfig, ctx) {
 
   // api可以是字符串，字符串数组，对象混合字符串数组，函数(返回前面3中类型数据)
   if (typeOf(api).isFunc) {
-    api = api.call(config, ctx);
+    api = await api.call(config, ctx);
   }
 
   // 无api配置，直接执行下一个stage
   if (!api) {
     if (isInterceptor && config.handle) {
-      const data = config.handle(ctx.apiData, ctx);
+      const data = await config.handle(ctx.apiData, ctx);
 
       if (data) {
         valueChain.set(data);
@@ -75,7 +75,11 @@ async function handleInterceptor(ctx) {
     return;
   }
 
-  ctx.interceptors = ctx.interceptors.map(interceptor => handleConfig(interceptor, ctx));
+  ctx.interceptors = await Promise.all(
+    ctx.interceptors.map(async interceptor =>
+      await handleConfig(interceptor, ctx)
+    )
+  );
 
   const seriesTask = ctx.apisTask.series;
 

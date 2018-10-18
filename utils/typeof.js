@@ -2,7 +2,8 @@ module.exports = function typeOf(obj) {
   const type = Object.prototype.toString.call(obj)
     .toLowerCase()
     .replace('[object ', '')
-    .replace(']', '');
+    .replace(']', '')
+    .replace('async', '');
 
   const r = {
     type,

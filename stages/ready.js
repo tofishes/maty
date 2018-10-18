@@ -14,7 +14,7 @@ module.exports = async function ready(ctx, next) {
 
   const type = ctx.get('X-Requested-With') || '';
   const xhr = type.toLowerCase() === 'xmlhttprequest';
-  const reqBody = ctx.request.body;
+  const reqBody = ctx.request.body || {};
 
   Object.assign(ctx, {
     ua,

@@ -30,12 +30,13 @@ stage.app.use(async (ctx, next) => {
 });
 
 // other template engine
-stage.engine('jade', (filePath, data, callback) => {
+stage.engine('jade', (filePath, data) => {
   const fn = jade.compileFile(filePath, {
     cache: false
   });
   const html = fn(data);
-  callback(null, html);
+
+  return html;
 });
 
 // auto load filters

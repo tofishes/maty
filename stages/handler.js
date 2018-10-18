@@ -119,7 +119,7 @@ async function handler(ctx, next) {
     return next();
   }
 
-  ctx.router = handleConfig(ctx.router, ctx);
+  ctx.router = await handleConfig(ctx.router, ctx);
 
   const seriesTask = ctx.apisTask.series;
   const parallelTask = ctx.apisTask.parallel;

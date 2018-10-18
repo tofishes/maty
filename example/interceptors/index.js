@@ -1,3 +1,6 @@
+const send = require('koa-send');
+const access = require('../../utils/access');
+
 module.exports = {
   '/interceptor/forward/(.*)': {
     handle(data, ctx) {
@@ -12,5 +15,17 @@ module.exports = {
   '/interceptor/user/(.*)': {
     api: '/api/names',
     series: true
+  },
+  '/assets/(.*)': {
+    async api(ctx) {
+      const filePath = `/example${ctx.path}`;
+      const root = process.cwd();
+
+      if (await access(root + filePath)) {
+        await send(ctx, filePath);
+      }
+
+      return null;
+    }
   }
 };

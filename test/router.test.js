@@ -109,13 +109,20 @@ test('router.timeout', done => {
 
 test('router.proxy is string', done => {
   request(app.callback())
-    .get('/router/proxy/string')
+    .get('/router.proxy/string')
     .expect(200, /鞋子非常好，质量棒棒哒/, done);
 
 });
 
 test('router.proxy is function', done => {
   request(app.callback())
-    .get('/router/proxy/function')
+    .get('/router.proxy/function')
     .expect(200, /鞋子非常好，质量棒棒哒/, done);
+});
+
+
+test('router.proxy image', done => {
+  request(app.callback())
+    .get('/router.proxy/image')
+    .expect(200, done);
 });

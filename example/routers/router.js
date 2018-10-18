@@ -88,12 +88,23 @@ module.exports = {
       ctx.body = data.baidu.message;
     }
   },
-  '/router/proxy/string': {
+  '/router.proxy/string': {
     proxy: '/comment/list'
   },
-  '/router/proxy/function': {
+  '/router.proxy/function': {
     proxy() {
       return '/api/comments';
+    }
+  },
+  '/router.proxy/image': {
+    proxy: '/assets/avatar.jpg'
+  },
+  '/router.defaultParam/:name/:age?': {
+    defaultParam: {
+      age: 20
+    },
+    handle(data, ctx) {
+      ctx.body = `${ctx.param.name} is ${ctx.param.age} years old`;
     }
   }
 }

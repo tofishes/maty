@@ -27,6 +27,7 @@
 * router.timeout
 * router.proxy is string
 * router.proxy is function
+* router.proxy image
 
 * query
 * reqBody
@@ -44,3 +45,5 @@
 
 * response page disable cache
 * response ajax disable cache
+
+* filter extend router.defaultParam

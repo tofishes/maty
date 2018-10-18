@@ -1,6 +1,7 @@
 const jade = require('jade');
 const log = require('t-log');
 const maty = require('../index');
+const loadModule = require('../utils/load-module');
 
 const stage = maty({
   interceptorDir: `${__dirname}/interceptors`,
@@ -28,6 +29,7 @@ stage.app.use(async (ctx, next) => {
   log.warn(`this request ${ctx.path} cost time ${timer.end()}`)
 });
 
+// other template engine
 stage.engine('jade', (filePath, data, callback) => {
   const fn = jade.compileFile(filePath, {
     cache: false
@@ -36,16 +38,8 @@ stage.engine('jade', (filePath, data, callback) => {
   callback(null, html);
 });
 
-stage.filter('response', async (ctx, next) => {
-  await next();
-
-  const apiInfo = ctx.apiInfo;
-
-  Object.keys(apiInfo).map(name => {
-    const info = apiInfo[name];
-    log.info(info.method, info.api, info.consumeTime, 'ms');
-  });
-});
+// auto load filters
+loadModule(`${__dirname}/filters`, mod => mod(stage));
 
 stage.mount(stage.app);
 

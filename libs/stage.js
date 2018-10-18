@@ -100,7 +100,7 @@ class Stage {
     // 扩展context
     Reflect.defineProperty(app.context, 'isEnd', {
       get() {
-        return this.body !== undefined;
+        return this.body !== undefined || this.status !== 404;
       }
     });
     app.context.stage = this;
@@ -134,6 +134,8 @@ class Stage {
       const isMatchMount = !mountPath || minimatch(ctx.path, mountPath);
 
       if (isMatchMount) {
+        // 不能使用Promise.all + map的循环方式，Promise.all不能保证执行顺序
+        // 这里必须保证顺序执行
         for (const fn of starters) {
           await fn(ctx);
         }

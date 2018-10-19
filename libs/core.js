@@ -8,12 +8,6 @@ const parseMultiName = require('../utils/parse-multi-name');
 const parseRouter = require('./parse-router');
 const Stage = require('./stage');
 
-const pwd = process.cwd();
-const defaultRouterDir = `${pwd}/routers`;
-const defaultInterceptorDir = `${pwd}/interceptors`;
-const defaultViewDir = `${pwd}/views`;
-const defaultUploadDir = `${pwd}/uploads`;
-
 function loadRoutes(dir) {
   const map = {};
   const files = glob.sync(`${dir}/**/*.js`);
@@ -39,6 +33,12 @@ function simpleApiDataName(api) {
  * @return {[type]}      [description]
  */
 module.exports = (args = {}) => {
+  const base = args.baseDir || process.cwd();
+  const defaultRouterDir = `${base}/routers`;
+  const defaultInterceptorDir = `${base}/interceptors`;
+  const defaultViewDir = `${base}/views`;
+  const defaultUploadDir = `${base}/uploads`;
+
   const {
     routerDir = defaultRouterDir,           // 路由目录
     interceptorDir = defaultInterceptorDir, // 拦截器目录

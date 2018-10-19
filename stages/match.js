@@ -54,8 +54,7 @@ function matchInterceptor(ctx, interceptors) {
   });
 }
 
-const defaultMethods = ['get'];
-
+const defaultMethod = 'get';
 async function match(ctx, next) {
   const { stage } = ctx;
 
@@ -70,7 +69,7 @@ async function match(ctx, next) {
   }
 
   const method = ctx.method.toLowerCase();
-  const supportRouter = (router.methods || defaultMethods).includes(method);
+  const supportRouter = (router.method || defaultMethod).includes(method);
 
   if (!supportRouter) {
     ctx.status = 405;

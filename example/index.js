@@ -3,7 +3,7 @@ const log = require('t-log');
 const maty = require('../index');
 const loadModule = require('../utils/load-module');
 
-const stage = maty({
+const app = maty({
   interceptorDir: `${__dirname}/interceptors`,
   routerDir: `${__dirname}/routers`,
   viewDir: `${__dirname}/views`,
@@ -16,7 +16,7 @@ const stage = maty({
   }
 });
 
-stage.app.use(async (ctx, next) => {
+app.use(async (ctx, next) => {
   if (ctx.path === '/favicon.ico') {
     ctx.body = 'ok';
     return;
@@ -30,7 +30,7 @@ stage.app.use(async (ctx, next) => {
 });
 
 // other template engine
-stage.engine('jade', (filePath, data) => {
+app.engine('jade', (filePath, data) => {
   const fn = jade.compileFile(filePath, {
     cache: false
   });
@@ -40,8 +40,17 @@ stage.engine('jade', (filePath, data) => {
 });
 
 // auto load filters
-loadModule(`${__dirname}/filters`, mod => mod(stage));
+loadModule(`${__dirname}/filters`, mod => mod(app));
 
-stage.mount(stage.app);
+// just for jest test env
+const isOnJest = typeof jest !== 'undefined';
+if (!isOnJest) {
+  const port = 8080;
+  app.listen(port, () => {
+    const startInfo = `server run at http://localhost:${port}`;
 
-module.exports = { stage, app: stage.app };
+    log.info(startInfo);
+  });
+}
+
+module.exports = { app };

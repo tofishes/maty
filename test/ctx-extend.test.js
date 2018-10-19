@@ -1,6 +1,6 @@
 const exec = require('child_process').exec;
 const request = require('supertest');
-const { app, stage } = require('../example');
+const { app } = require('../example');
 
 test('ctx.param', done => {
   request(app.callback())
@@ -34,7 +34,7 @@ test('ctx.request.files', done => {
       expect(avatar.path).toMatch(/\.jpg/i);
 
       // clean
-      exec(`rm -rf ${stage.get('uploadDir')}`);
+      exec(`rm -rf ${app.get('uploadDir')}`);
     })
     .end(done);
 });

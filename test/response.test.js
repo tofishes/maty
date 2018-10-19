@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { app, stage } = require('../example');
+const { app } = require('../example');
 
 test('response page disable cache', done => {
   request(app.callback())
@@ -8,7 +8,7 @@ test('response page disable cache', done => {
 });
 
 test('response ajax disable cache', done => {
-  stage.set('ajaxCache', false);
+  app.set('ajaxCache', false);
 
   request(app.callback())
     .get('/api/comments')

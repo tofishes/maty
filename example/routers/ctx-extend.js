@@ -10,13 +10,13 @@ module.exports = {
     }
   },
   '/ctx-extend/reqbody/:id': {
-    methods: 'post',
+    method: 'post',
     handle(data, ctx) {
       ctx.body = `${ctx.reqBody.id}: ${ctx.reqBody.name}`;
     }
   },
   '/ctx-extend/files': {
-    methods: 'post',
+    method: 'post',
     handle(data, ctx) {
       ctx.body = ctx.request.files;
     }

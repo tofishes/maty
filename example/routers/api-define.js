@@ -3,7 +3,7 @@ const names = require('../data/name-list.json');
 
 module.exports = {
   '/api/comments': {
-    methods: ['get', 'post'],
+    method: 'get, post',
     handle() {
       return comments;
     }

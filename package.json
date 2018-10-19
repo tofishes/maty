@@ -7,6 +7,19 @@
   "author": "tofishes",
   "license": "Apache-2.0",
   "private": false,
+  "keywords": [
+    "web",
+    "app",
+    "http",
+    "application",
+    "framework",
+    "forward",
+    "koa",
+    "api",
+    "router",
+    "interceptor",
+    "filter"
+  ],
   "scripts": {
     "test": "jest --detectOpenHandles --forceExit",
     "cover": "jest --coverage"

@@ -19,8 +19,10 @@ const urlInfo = require('../utils/url-info');
 const concat = Array.prototype.concat;
 const defaultLimit = 1000 * 1024 * 1024; // 1000M
 
-class Stage {
+class Stage extends Koa {
   constructor() {
+    super();
+
     this.defautStages = {
       request: [ready, match, initHttpRequest],
       response: [handler, forward, getView, render]
@@ -34,8 +36,6 @@ class Stage {
     this.stages.map(stageName => {
       this.filterMap[stageName] = [];
     });
-
-    this.app = new Koa();
   }
 
   // 添加filter
@@ -84,6 +84,12 @@ class Stage {
       app = path;
       mountPath = null;
     }
+
+    if (app.isMatyMounted) {
+      return;
+    }
+
+    app.isMatyMounted = true;
 
     app.use(bodyParser({
       jsonLimit: defaultLimit,
@@ -145,9 +151,10 @@ class Stage {
     });
   }
 
-  listen(...args) {
-    this.mount(this.app);
-    return this.app.listen.apply(this.app, args);
+  callback() {
+    this.mount(this);
+
+    return super.callback();
   }
 }
 

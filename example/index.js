@@ -4,9 +4,7 @@ const maty = require('../index');
 const loadModule = require('../utils/load-module');
 
 const app = maty({
-  interceptorDir: `${__dirname}/interceptors`,
-  routerDir: `${__dirname}/routers`,
-  viewDir: `${__dirname}/views`,
+  baseDir: `${process.cwd()}/example`,
   handleAPI(apiUrl, ctx) {
     if (apiUrl.startsWith('/')) {
       return `${ctx.origin}${apiUrl}`;

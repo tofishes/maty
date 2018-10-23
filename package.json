@@ -1,6 +1,6 @@
 {
   "name": "maty",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "一个使用简单且友好的页面渲染服务框架",
   "main": "index.js",
   "repository": "https://github.com/tofishes/maty.git",

@@ -58,7 +58,6 @@ class Task {
 
     const query = config.query || ctx.query;
     const body = config.body || ctx.reqBody;
-    const name = config.name;
     let cache = config.cache;
 
     function action(callback) {
@@ -81,7 +80,7 @@ class Task {
       }
 
       // 默认为对象类型，合并第一级配置的参数处理器
-      apiConfig = Object.assign({ query, body, name, cache }, apiConfig);
+      apiConfig = Object.assign({ query, body, cache }, apiConfig);
 
       // 参数处理
       apiConfig.query = excute(apiConfig.query);

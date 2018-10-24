@@ -80,8 +80,10 @@ module.exports = {
     }
   },
   '/router.timeout': {
-    api: 'http://www.baidu.com',
-    name: 'baidu',
+    api: [{
+      api: 'http://www.baidu.com',
+      name: 'baidu'
+    }],
     timeout: 1,
     handle(data, ctx) {
       ctx.status = data.baidu.code;

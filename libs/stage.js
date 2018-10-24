@@ -2,7 +2,6 @@
 const Koa = require('koa');
 const compose = require('koa-compose');
 const bodyParser = require('koa-body');
-const minimatch = require('minimatch');
 
 // request stages
 const ready = require('../stages/ready');
@@ -85,11 +84,13 @@ class Stage extends Koa {
       mountPath = null;
     }
 
-    if (app.isMatyMounted) {
+    // mount重复性检查
+    const mountKey = `${mountPath || 'default'}-mounted`;
+    app.matyMountedMap = app.matyMountedMap || {};
+    if (app.matyMountedMap[mountKey]) {
       return;
     }
-
-    app.isMatyMounted = true;
+    app.matyMountedMap[mountKey] = true;
 
     app.use(bodyParser({
       jsonLimit: defaultLimit,
@@ -137,7 +138,7 @@ class Stage extends Koa {
     });
 
     app.use(async (ctx, next) => {
-      const isMatchMount = !mountPath || minimatch(ctx.path, mountPath);
+      const isMatchMount = !mountPath || ctx.path.startsWith(mountPath);
 
       if (isMatchMount) {
         // 不能使用Promise.all + map的循环方式，Promise.all不能保证执行顺序

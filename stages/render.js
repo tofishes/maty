@@ -2,7 +2,7 @@ const minimatch = require('minimatch');
 const log = require('t-log');
 
 async function render(ctx, next) {
-  const { stage, viewFile } = ctx;
+  const { app, viewFile } = ctx;
 
   if (!viewFile) {
     if (Object.keys(ctx.apiData).length) {
@@ -12,7 +12,7 @@ async function render(ctx, next) {
     return next();
   }
 
-  const excludes = stage.get('viewExclude')
+  const excludes = app.get('viewExclude')
     .filter(exclude => minimatch(viewFile, exclude));
 
   // 匹配到需排除渲染的路径
@@ -22,7 +22,7 @@ async function render(ctx, next) {
     return next();
   }
 
-  const engine = stage.engines[ctx.viewExt];
+  const engine = app.engines[ctx.viewExt];
 
   if (!engine) {
     return ctx.throw(`File type '${ctx.viewExt}' has no template engine`);

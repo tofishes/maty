@@ -56,10 +56,10 @@ function matchInterceptor(ctx, interceptors) {
 
 const defaultMethod = 'get';
 async function match(ctx, next) {
-  const { stage } = ctx;
+  const { app } = ctx;
 
-  const { router, param = {} } = matchRouter(ctx.path, stage.get('routers'));
-  ctx.interceptors = matchInterceptor(ctx, stage.get('interceptors'));
+  const { router, param = {} } = matchRouter(ctx.path, app.get('routers'));
+  ctx.interceptors = matchInterceptor(ctx, app.get('interceptors'));
 
   ctx.param = param;
 

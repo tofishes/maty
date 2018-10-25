@@ -11,7 +11,7 @@ function access(filePath) {
 }
 
 async function getViewPath(ctx, next) {
-  const { stage, router = {} } = ctx;
+  const { app, router = {} } = ctx;
 
   let view = router.view || ctx.path;
 
@@ -29,7 +29,7 @@ async function getViewPath(ctx, next) {
   }
 
   // 已设置默认引擎
-  const defaultEngine = stage.get('view engine');
+  const defaultEngine = app.get('view engine');
   let ext = path.extname(view);
 
   if (!ext) {
@@ -40,7 +40,7 @@ async function getViewPath(ctx, next) {
   ctx.viewPath = view;
   ctx.viewExt = ext;
 
-  const filePath = path.join(stage.get('views'), view);
+  const filePath = path.join(app.get('views'), view);
   let viewFile = await access(filePath);
 
   if (!viewFile) {

@@ -2,11 +2,11 @@ const glob = require('glob');
 const nunjucks = require('nunjucks');
 const cache = require("lru-cache");
 
+const Maty = require('./maty');
+const parseRouter = require('./parse-router');
 const env = require('../utils/env');
 const makedir = require('../utils/makedir');
 const parseMultiName = require('../utils/parse-multi-name');
-const parseRouter = require('./parse-router');
-const Stage = require('./stage');
 
 function loadRoutes(dir) {
   const map = {};
@@ -25,7 +25,7 @@ function simpleApiDataName(api) {
 }
 
 /**
- * 框架maty，基于koa.js用于简化前端页面直出流程的框架
+ * maty，基于koa.js用于简化前端页面直出流程的框架
  *
  * @param  {[type]} args 配置对象
  * args.routerDir: 路由配置目录
@@ -58,24 +58,24 @@ module.exports = (args = {}) => {
     interceptor.type = 'interceptor';
   });
 
-  const stage = new Stage();
+  const app = new Maty();
 
   // 存储
-  stage.set('interceptorMap', interceptorMap);
-  stage.set('interceptors', interceptors);
-  stage.set('routerMap', routerMap);
-  stage.set('routers', routers);
-  stage.set('views', viewDir);
-  stage.set('viewExclude', viewExclude);
+  app.set('interceptorMap', interceptorMap);
+  app.set('interceptors', interceptors);
+  app.set('routerMap', routerMap);
+  app.set('routers', routers);
+  app.set('views', viewDir);
+  app.set('viewExclude', viewExclude);
   // 保存接口数据缓存方法
-  stage.set('apiDataCache', apiDataCache);
+  app.set('apiDataCache', apiDataCache);
   // 保存接口数据名方法
-  stage.set('apiDataName', apiDataName);
+  app.set('apiDataName', apiDataName);
   // 保存接口地址处理方法
-  stage.set('handleAPI', handleAPI);
+  app.set('handleAPI', handleAPI);
 
-  stage.set('ajaxCache', ajaxCache);
-  stage.set('uploadDir', uploadDir);
+  app.set('ajaxCache', ajaxCache);
+  app.set('uploadDir', uploadDir);
 
   makedir(uploadDir);
 
@@ -85,9 +85,9 @@ module.exports = (args = {}) => {
     noCache: env.isDev,
     watch: env.isDev
   });
-  stage.set('nunjucks', nunjucks);
-  stage.set('nunjucksEnv', nunjucksEnv);
-  stage.engine('njk', (filePath, data) => {
+  app.set('nunjucks', nunjucks);
+  app.set('nunjucksEnv', nunjucksEnv);
+  app.engine('njk', (filePath, data) => {
     return new Promise((resolve, reject) => {
       nunjucksEnv.render(filePath, data, (error, html) => {
         if (error) {
@@ -98,7 +98,7 @@ module.exports = (args = {}) => {
       });
     });
   });
-  stage.set('view engine', 'njk');
+  app.set('view engine', 'njk');
 
-  return stage;
+  return app;
 };

@@ -30,7 +30,7 @@ function getForwardInfo(ctx) {
     const urlMethod = parseURLMethod(proxy, method);
 
     method = urlMethod.method;
-    url = ctx.stage.get('handleAPI')(urlMethod.url, ctx);
+    url = ctx.app.get('handleAPI')(urlMethod.url, ctx);
   }
 
   return { method, url };

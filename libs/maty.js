@@ -1,4 +1,4 @@
-// class Stage
+// class Maty
 const Koa = require('koa');
 const compose = require('koa-compose');
 const bodyParser = require('koa-body');
@@ -18,7 +18,7 @@ const urlInfo = require('../utils/url-info');
 const concat = Array.prototype.concat;
 const defaultLimit = 1000 * 1024 * 1024; // 1000M
 
-class Stage extends Koa {
+class Maty extends Koa {
   constructor() {
     super();
 
@@ -110,7 +110,7 @@ class Stage extends Koa {
         return this.body !== undefined || this.status !== 404;
       }
     });
-    app.context.stage = this;
+
     app.context.forward = function forward(url) {
       const ctx = this;
       let forwardUrl = url;
@@ -159,4 +159,4 @@ class Stage extends Koa {
   }
 }
 
-module.exports = Stage;
+module.exports = Maty;

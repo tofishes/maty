@@ -22,7 +22,7 @@ async function handleConfig(originConfig, ctx) {
     api = await api.call(config, ctx);
   }
 
-  // 无api配置，直接执行下一个stage
+  // 无api配置，直接返回
   if (!api) {
     if (isInterceptor && config.handle) {
       const data = await config.handle(ctx.apiData, ctx);

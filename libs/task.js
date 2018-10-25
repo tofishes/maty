@@ -45,7 +45,7 @@ class Task {
   // api类型任务
   addApiTask(apiItem, config) {
     const ctx = this.props.context;
-    const { stage } = ctx;
+    const { app } = ctx;
     const httpRequest = ctx.httpRequest();
 
     const excute = func => {
@@ -89,7 +89,7 @@ class Task {
       apiConfig.cache = cache = excute(apiConfig.cache);
       // 数据名
       if (!apiConfig.name) {
-        apiConfig.name = stage.get('apiDataName').call(config, apiConfig.api);
+        apiConfig.name = app.get('apiDataName').call(config, apiConfig.api);
       }
 
       const dataName = apiConfig.name;
@@ -98,7 +98,7 @@ class Task {
       let url = urlMethod.url;
       const cacheKey = url + querystring.stringify(apiConfig.query);
 
-      const handleAPI = stage.get('handleAPI');
+      const handleAPI = app.get('handleAPI');
       url = handleAPI(url, ctx);
 
       apiConfig.method = urlMethod.method;
@@ -111,7 +111,7 @@ class Task {
       }
 
       if (cache) {
-        const apiDataCache = stage.get('apiDataCache');
+        const apiDataCache = app.get('apiDataCache');
         let result = apiDataCache.get(cacheKey);
 
         if (result) {
@@ -159,7 +159,7 @@ class Task {
         }
         // 必须缓存原始数据，否则不同路由的数据共享在handle时会出问题
         if (willCache) {
-          const apiDataCache = stage.get('apiDataCache');
+          const apiDataCache = app.get('apiDataCache');
           apiDataCache.set(cacheKey, result, expires);
         }
 

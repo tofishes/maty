@@ -12,7 +12,6 @@ function disableCache(disabled) {
   this.set(cacheHeader, 'no-cache, no-store, must-revalidate');
 }
 
-
 function getRequest() {
   const config = this.httpRequestConfig || {};
 
@@ -21,13 +20,13 @@ function getRequest() {
   }
 
   const httpRequest = request(config);
+  const apiReq = {};
 
-  request.methods = methods.map(method => {
-    request[method] = (options, complete) => httpRequest[method](options, complete);
-    return method;
+  methods.map(method => {
+    apiReq[method] = (options, complete) => httpRequest[method](options, complete);
   });
 
-  return request;
+  return apiReq;
 }
 
 module.exports = async function initHttpRequest(ctx, next) {

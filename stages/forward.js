@@ -1,7 +1,7 @@
 /**
  * 转发请求：
  * 1、使用ctx.forward(url)
- * 2、router且router.forward = true
+ * 2、router且router.proxy = true
  * 3、通过外部设置，ctx.forwardUrl = path
  *
  * 实践：

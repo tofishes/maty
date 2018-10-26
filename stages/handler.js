@@ -44,7 +44,8 @@ async function handleConfig(originConfig, ctx) {
   // 拦截器api为非字符串型时，仅支持数组项内的handle，不支持全局handle
   if (typeOf(api).isString) {
     const handle = isInterceptor ? config.handle : null;
-    api = [{ api, handle }];
+    const name = config.name;
+    api = [{ api, handle, name }];
   }
 
   if (!Array.isArray(api)) {

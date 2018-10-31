@@ -88,11 +88,8 @@ class Task {
       // 缓存
       apiConfig.cache = cache = excute(apiConfig.cache);
       // 数据名
-      if (!apiConfig.name) {
-        apiConfig.name = app.get('apiDataName').call(config, apiConfig.api);
-      }
-
-      const dataName = apiConfig.name;
+      const dataName = apiConfig.name
+          || app.get('apiDataName').call(config, apiConfig.api);
 
       const urlMethod = parseURLMethod(apiConfig.api, ctx.method);
       let url = urlMethod.url;

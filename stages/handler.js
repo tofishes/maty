@@ -4,6 +4,7 @@ const typeOf = require('../utils/typeof');
 const Task = require('../libs/task');
 
 async function handleConfig(originConfig, ctx) {
+  // 必须保护originConfig不受污染
   let config = originConfig;
 
   if (typeOf(config).isFunc) {
@@ -29,14 +30,10 @@ async function handleConfig(originConfig, ctx) {
 
       if (data) {
         valueChain.set(data);
-      }
-
-      if (config.name) {
-        ctx.apiData[config.name] = data;
-      } else {
-        ctx.apiData = data || ctx.apiData;
+        ctx.apiData = data;
       }
     }
+
     return config;
   }
 
@@ -44,12 +41,13 @@ async function handleConfig(originConfig, ctx) {
   // 拦截器api为非字符串型时，仅支持数组项内的handle，不支持全局handle
   if (typeOf(api).isString) {
     const handle = isInterceptor ? config.handle : null;
-    const name = config.name;
-    api = [{ api, handle, name }];
+    api = [{ api, handle }];
+  } else if (typeOf(api).is('object')) {
+    api = [api];
   }
 
   if (!Array.isArray(api)) {
-    throw new TypeError('The type of api must be String or Array or Function');
+    throw new TypeError('The type of api must be one of [String,Object,Array,Function]');
   }
 
   /*

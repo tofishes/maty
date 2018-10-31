@@ -14,6 +14,19 @@ module.exports = {
     },
     view: 'comments-and-names'
   },
+  '/router.api/is/object': {
+    api: {
+      api: '/api/user/info',
+      name: 'userInfo',
+      series: true,
+      handle(data, ctx) {
+        return data;
+      }
+    },
+    handle(data) {
+      return data.userInfo;
+    }
+  },
   '/router.api/is/series': {
     api: [{
       api: '/api/names',

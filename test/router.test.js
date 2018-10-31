@@ -16,6 +16,12 @@ test('router.api can be function', done => {
     .expect(200, /api-is-function/ ,done);
 });
 
+test('router.api can be object', done => {
+  request(app.callback())
+    .get('/router.api/is/object')
+    .expect(200, /newUser/ ,done);
+});
+
 test('router.view can be function', done => {
   request(app.callback())
     .get('/router.view/is/function')
@@ -126,3 +132,16 @@ test('router.proxy image', done => {
     .get('/router.proxy/image')
     .expect(200, done);
 });
+
+
+test('router.api mixed types config', done => {
+  request(app.callback())
+    .get('/mixed/api/config')
+    .expect(200, /^(?!.*undefined)/i, done);
+})
+
+test('router.api mixed types config', done => {
+  request(app.callback())
+    .get('/mixed/api/config?commentShow=1')
+    .expect(200, /棒棒哒/, done);
+})

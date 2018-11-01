@@ -2,7 +2,8 @@
 
   [![Build Status][build-image]][build-url]
   [![Test coverage][coveralls-image]][coveralls-url]
-  ![Hex.pm](https://img.shields.io/hexpm/l/:package.svg)
+  [![GitHub license][license-image]][license-url]
+
 
 maty是一个基于Koa的使用简单且友好的页面渲染服务框架。
 
@@ -78,3 +79,5 @@ $ cd maty/example
 [build-url]: http://travis-ci.org/tofishes/maty
 [coveralls-image]: https://codecov.io/gh/tofishes/maty/branch/master/graph/badge.svg
 [coveralls-url]: https://codecov.io/github/tofishes/maty?branch=master
+[license-image]: https://img.shields.io/github/license/tofishes/maty.svg
+[license-url]: https://github.com/tofishes/maty/blob/master/LICENSE

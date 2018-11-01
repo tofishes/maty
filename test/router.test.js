@@ -129,23 +129,10 @@ test('router.proxy is function', done => {
 
 
 test('router.proxy image', done => {
-  console.log('*************************')
-
-  console.log(`${process.cwd()}/example}`)
-
-  console.log('*************************')
   request(app.callback())
     .get('/router.proxy/image')
     .expect(200, done);
 });
-
-test('assets image', done => {
-  request(app.callback())
-    .get('/assets/avatar.jpg')
-    .expect(200, done);
-});
-
-
 
 test('router.api mixed types config', done => {
   request(app.callback())

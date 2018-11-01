@@ -112,7 +112,7 @@ module.exports = {
     }
   },
   '/router.proxy/image': {
-    proxy: '/assets/avatar.jpg'
+    proxy: '/static/avatar.jpg'
   },
   '/router.defaultParam/:name/:age?': {
     defaultParam: {

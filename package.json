@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "test": "jest --detectOpenHandles --forceExit",
-    "cover": "jest --coverage"
+    "cover": "jest --coverage --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "async": "^2.6.1",

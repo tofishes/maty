@@ -1,4 +1,5 @@
 const request = require('supertest');
+const access = require('../utils/access');
 
 const { app } = require('../example');
 const comments = require('../example/data/comment-list.json');
@@ -128,10 +129,22 @@ test('router.proxy is function', done => {
 
 
 test('router.proxy image', done => {
+  console.log('*************************')
+
+  console.log(`${process.cwd()}/example}`)
+
+  console.log('*************************')
   request(app.callback())
     .get('/router.proxy/image')
     .expect(200, done);
 });
+
+test('assets image', done => {
+  request(app.callback())
+    .get('/assets/avatar.jpg')
+    .expect(200, done);
+});
+
 
 
 test('router.api mixed types config', done => {

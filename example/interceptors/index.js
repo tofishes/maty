@@ -21,6 +21,9 @@ module.exports = {
       const filePath = `/example${ctx.path}`;
       const root = process.cwd();
 
+      console.log('---------------------------')
+      console.log(root, filePath, await access(root + filePath), '--------------')
+
       if (await access(root + filePath)) {
         await send(ctx, filePath);
       }

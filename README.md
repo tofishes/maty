@@ -1,5 +1,9 @@
 # maty.js
 
+  [![Build Status][build-image]][build-url]
+  [![Test coverage][coveralls-image]][coveralls-url]
+  ![Hex.pm](https://img.shields.io/hexpm/l/:package.svg)
+
 maty是一个基于Koa的使用简单且友好的页面渲染服务框架。
 
 maty使用双洋葱圈模型，配置好路由信息（接口地址及数据处理方法等），即可方便的搭建一个项目服务。
@@ -69,3 +73,8 @@ $ cd maty/example
 ### License
 
 [Apache-2.0](https://github.com/tofishes/maty/blob/master/LICENSE)
+
+[build-image]: https://travis-ci.org/tofishes/maty.svg?branch=master
+[build-url]: http://travis-ci.org/tofishes/maty
+[coveralls-image]: https://codecov.io/gh/tofishes/maty/branch/master/graph/badge.svg
+[coveralls-url]: https://codecov.io/github/tofishes/maty?branch=master

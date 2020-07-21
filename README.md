@@ -22,7 +22,7 @@ maty使用双洋葱圈模型，配置好路由信息（接口地址及数据处�
 
 `$ npm install maty`
 
-Node.js >= v8.0.0 required.
+Node.js >= v10.0.0 required.
 
 ### Quick Start 开始使用
 

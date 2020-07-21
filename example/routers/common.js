@@ -2,6 +2,11 @@ module.exports = {
   '/hello/:name': {
     view: 'hello'
   },
+  '/hello/no-param-first': { // 和/hello/:name路由冲突，以无参数匹配优先访问
+    handle(data, ctx) {
+      ctx.body = 'conflict router and no-param-first'
+    }
+  },
   '/comment/list': {
     api: '/api/comments',
     cache: true,

@@ -1,6 +1,20 @@
 const request = require('supertest');
 const { app } = require('../example');
 
+test('hello from router param', done => {
+  request(app.callback())
+    .get('/hello/maty')
+    .expect('Content-Type', /html/)
+    .expect(200, /maty/, done);
+});
+
+test('hello conflict with router param', done => {
+  request(app.callback())
+    .get('/hello/no-param-first')
+    .expect('Content-Type', /text/)
+    .expect(200, /conflict router and no-param-first/, done);
+});
+
 test('html render', done => {
   request(app.callback())
     .get('/comment/list')

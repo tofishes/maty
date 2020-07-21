@@ -1,6 +1,6 @@
 const glob = require('glob');
 const nunjucks = require('nunjucks');
-const cache = require("lru-cache");
+const Cache = require("lru-cache");
 
 const Maty = require('./maty');
 const parseRouter = require('./parse-router');
@@ -44,7 +44,7 @@ module.exports = (args = {}) => {
     interceptorDir = defaultInterceptorDir, // 拦截器目录
     viewDir = defaultViewDir,               // 视图模板目录
     viewExclude = ['**/include/**'],        // 排除自动渲染模板的目录，采用glob匹配规则
-    apiDataCache = cache(),                 // 接口数据缓存方法，默认lru-cache实现
+    apiDataCache = new Cache(500),          // 接口数据缓存方法，默认lru-cache实现
     apiDataName = simpleApiDataName,        // 接口数据名方法，默认为获取api地址最后一个/后面的单词名
     handleAPI = url => url,                 // router.api地址预处理方法，默认返回自身
     ajaxCache = true,                       // 是否允许缓存ajax响应结果，默认允许缓存

@@ -87,13 +87,13 @@ test('router.cache can be function', done => {
 test('router.handle use ctx.forward', done => {
   request(app.callback())
     .get('/router.handle/use/ctx.forward')
-    .expect(200, 'hello world', done);
+    .expect(200, /hello world/, done);
 });
 
 test('router.api use ctx.forward', done => {
   request(app.callback())
     .get('/router.api/use/ctx.forward')
-    .expect(200, 'hello world', done);
+    .expect(200, /hello world/, done);
 });
 
 test('router.api is Array', done => {

@@ -34,9 +34,6 @@ app.engine('pug', (filePath, data) => {
   });
   const html = fn(data);
 
-
-  console.log(html, '==============================')
-
   return html;
 });
 

@@ -1,4 +1,4 @@
-const jade = require('jade');
+const pug = require('pug');
 const log = require('t-log');
 const maty = require('../index');
 const loadModule = require('../utils/load-module');
@@ -28,11 +28,14 @@ app.use(async (ctx, next) => {
 });
 
 // other template engine
-app.engine('jade', (filePath, data) => {
-  const fn = jade.compileFile(filePath, {
-    cache: false
+app.engine('pug', (filePath, data) => {
+  const fn = pug.compileFile(filePath, {
+    cache: true
   });
   const html = fn(data);
+
+
+  console.log(html, '==============================')
 
   return html;
 });

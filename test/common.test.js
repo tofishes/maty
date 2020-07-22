@@ -47,10 +47,10 @@ test('exclude view dir', done => {
     .expect(404, done);
 });
 
-test('other render engines, ex. jade', done => {
+test('other render engines, ex. pug', done => {
   request(app.callback())
-    .get('/engine/jade')
-    .expect(200, /this is jade/i, done);
+    .get('/engine/pug')
+    .expect(200, /this is pug/i, done);
 });
 
 test('/404', done => {

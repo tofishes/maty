@@ -18,8 +18,8 @@ module.exports = {
     },
     view: 'comments'
   },
-  '/engine/jade': {
-    view: 'engine/jade.jade'
+  '/engine/pug': {
+    view: 'engine/pug.pug'
   },
   '/redirect': {
     handle(data, ctx) {

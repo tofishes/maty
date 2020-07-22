@@ -43,9 +43,9 @@
     "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
-    "jade": "^1.11.0",
     "jest": "^26.1.0",
     "koa-send": "^5.0.1",
+    "pug": "^3.0.0",
     "supertest": "^4.0.2"
   },
   "jest": {

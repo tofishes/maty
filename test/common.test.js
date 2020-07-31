@@ -1,6 +1,13 @@
 const request = require('supertest');
 const { app } = require('../example');
 
+test('home page', done => {
+  request(app.callback())
+    .get('/')
+    .expect('Content-Type', /html/)
+    .expect(200, /home page/, done);
+});
+
 test('hello from router param', done => {
   request(app.callback())
     .get('/hello/maty')

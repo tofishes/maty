@@ -3,7 +3,7 @@ const nunjucks = require('nunjucks');
 const Cache = require("lru-cache");
 
 const Maty = require('./maty');
-const parseRouter = require('./parse-router');
+const { parseRouters } = require('./parse-router');
 const env = require('../utils/env');
 const makedir = require('../utils/makedir');
 const parseMultiName = require('../utils/parse-multi-name');
@@ -53,8 +53,8 @@ module.exports = (args = {}) => {
 
   const interceptorMap = loadRoutes(interceptorDir);
   const routerMap = loadRoutes(routerDir);
-  const routers = parseRouter(routerMap);
-  const interceptors = parseRouter(interceptorMap, interceptor => {
+  const routers = parseRouters(routerMap);
+  const interceptors = parseRouters(interceptorMap, interceptor => {
     interceptor.type = 'interceptor';
   });
 
@@ -77,7 +77,9 @@ module.exports = (args = {}) => {
   app.set('ajaxCache', ajaxCache);
   app.set('uploadDir', uploadDir);
 
-  makedir(uploadDir);
+  if (uploadDir) {
+    makedir(uploadDir);
+  }
 
   // 添加默认模板引擎
   const nunjucksEnv = nunjucks.configure(viewDir, {

@@ -14,6 +14,7 @@ const getView = require('../stages/get-view-path');
 const render = require('../stages/render');
 
 const urlInfo = require('../utils/url-info');
+const { parseRouter, optimizeRouters } = require('../libs/parse-router');
 
 const concat = Array.prototype.concat;
 const defaultLimit = 1000 * 1024 * 1024; // 1000M
@@ -76,6 +77,10 @@ class Maty extends Koa {
     });
   }
 
+  router(route, config) {
+    this.get('routers').push(parseRouter(route, config));
+  }
+
   mount(path, koaApp) {
     let [app, mountPath] = [koaApp, path];
 
@@ -85,12 +90,15 @@ class Maty extends Koa {
     }
 
     // mount重复性检查
-    const mountKey = `${mountPath || 'default'}-mounted`;
+    const mountKey = Symbol.for(mountPath); //`${mountPath || 'default'}-mounted`;
     app.matyMountedMap = app.matyMountedMap || {};
     if (app.matyMountedMap[mountKey]) {
       return;
     }
     app.matyMountedMap[mountKey] = true;
+
+    optimizeRouters(app.get('routers'));
+    optimizeRouters(app.get('interceptors'));
 
     app.use(bodyParser({
       jsonLimit: defaultLimit,
@@ -117,7 +125,7 @@ class Maty extends Koa {
 
       if (url === ctx.path) {
         ctx.status = 500;
-        ctx.body = 'Can’t forward to same request path';
+        ctx.body = 'Can’t forward to the same request path';
         return;
       }
 

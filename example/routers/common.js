@@ -1,4 +1,7 @@
 module.exports = {
+  '/': {
+    view: 'home'
+  },
   '/hello/:name': {
     view: 'hello'
   },

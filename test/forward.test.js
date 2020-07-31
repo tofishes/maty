@@ -17,7 +17,7 @@ test('forward outer page', done => {
 test('forward to self', done => {
   request(app.callback())
     .get('/forward/self')
-    .expect(500, /Can’t forward to same request path/, done);
+    .expect(500, /Can’t forward to the same request path/, done);
 });
 
 test('forward in interceptor', done => {

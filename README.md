@@ -71,6 +71,11 @@ $ git clone https://github.com/tofishes/maty.git
 $ cd maty/example
 ```
 
+### Next Version Experiment API
+
+* app.router(route, config) 运行时添加路由配置
+* uploadDir 配置为false时不自动创建文件夹
+
 ### License
 
 [Apache-2.0](https://github.com/tofishes/maty/blob/master/LICENSE)
